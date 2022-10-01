@@ -1,5 +1,35 @@
 .App {
   text-align: center;
+  background-color: #0f1923;
+  width: 100vw;
+  height: 100vh;
+  font-size: 5vw;
+}
+
+p {
+  color: rgb(0, 0, 0);
+}
+
+#content-frame {
+  background-color: #cfd8e2;
+  width: 100vw;
+  height: 100vh;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 2px;
+  box-sizing: border-box;
+  font-size: 5vw;
+  border-color: rgb(0, 0, 0);
+  border-style: solid;
+  border-width: 2px;
+  text-align: center;
+}
+
+
+#intro-text {
+  position: relative;
+  margin: 0px;
+  top: 10%;
 }
 
 .App-logo {
