@@ -2,7 +2,20 @@
   "allowHttpBackend": false,
   "backendCommand": "",
   "backendFolderName": "",
-  "certificateExceptions": [],
+  "certificateExceptions": [
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": false,
+      "value": "https://localhost:3000/get_starting_avatars"
+    },
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "https://localhost:3001"
+    }
+  ],
   "extensionViews": [
     {
       "channelId": "817665171",
@@ -20,6 +33,28 @@
       "id": "1",
       "isPopout": false,
       "label": "test",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "component",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "817665171",
+      "configurationAnchor": "component",
+      "displayChannelName": "jhard9000_dev",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "2",
+      "isPopout": false,
+      "label": "Small View",
       "linked": false,
       "linkedUserId": "",
       "orientation": "Portrait",

@@ -1,8 +1,11 @@
 const backendURL = "https://localhost:3000";
+const resourceBackendURL = 'https://localhost:3001/resources/';
 
 const backend = {
 
-    resourceBackendURL: 'https://localhost/client-sandbox/',
+    getResourceURL(name) {
+        return resourceBackendURL + name;
+    },
 
     getStartingAvatars() {
         const requestPromise = new Promise((resolve, reject) => {

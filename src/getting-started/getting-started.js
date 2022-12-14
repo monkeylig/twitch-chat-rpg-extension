@@ -13,13 +13,23 @@ class SignUp extends React.Component {
         this.state = {page: 'welcome'};
 
         this.avatars = [];
+        this.navigateAvatarPick = this.navigateAvatarPick.bind(this);
+    }
+
+    navigateAvatarPick() {
+        backend.getStartingAvatars().then((data) => {
+            this.avatars = data;
+            this.setState({avatarsloaded: true});
+        });
+
+        this.setState({page: 'pick-avatar'})
     }
 
     renderWelcome(props) {
         return (
             <div id="content-frame">
                 <p id="intro-text">Welcome to Chat RPG! Click the button below to begin your journey for adventure and treasure.</p>
-                <RPGButton id='play-btn' onClick={() => {this.setState({page: 'pick-avatar'})}} >Play</RPGButton>
+                <RPGButton id='play-btn' onClick={this.navigateAvatarPick} >Play</RPGButton>
             </div>
         );
     }
@@ -27,17 +37,18 @@ class SignUp extends React.Component {
     renderAvatarPick(props) {
         if(!this.state.avatarsloaded)
         {
-            backend.getStartingAvatars().then((data) => {
-                this.avatars = data;
-                this.setState({avatarsloaded: true});
-            });
             return <h1>Loading</h1>
         }
         else {
+            const avatarImgs = this.avatars.map((url, index) => 
+                <img key={index} src={backend.getResourceURL(url)} className='avatarImg'/>
+            );
             return (
                 <div id="content-frame">
                     <h1>Choose an Avatar!</h1>
-                    <img src={backend.resourceBackendURL + this.avatars[0]} width="100" height="100"/>
+                    <div>
+                        {avatarImgs}
+                    </div>
                 </div>
             );   
         }

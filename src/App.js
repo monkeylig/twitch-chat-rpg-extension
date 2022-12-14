@@ -37,13 +37,5 @@ function Landing(props) {
   }
   return <p>Loading Chat RPG</p>
 }
-/*function App() {
-  return (
-    <div className="App">
-      <p id="intro-text">Welcome to Chat RPG! Click the button below to begin your journey for adventure and treasure.</p>
-      <div id="play-btn"><a href="#"><p><span class="bg"></span><span class="base"></span><span class="text">Play</span></p></a></div>
-    </div>
-  );
-}*/
 
 export default App;

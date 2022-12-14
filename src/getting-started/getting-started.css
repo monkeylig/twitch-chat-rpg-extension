@@ -1,4 +1,15 @@
 #play-btn {
     position: relative;
     top: 10%;
+    width: 50vw;
+}
+
+.avatarImg {
+    width: 40vw;
+    height: 40vw;
+    transition: transform 0.3s;
+}
+
+.avatarImg:hover {
+    transform: scale(1.3);
 }
