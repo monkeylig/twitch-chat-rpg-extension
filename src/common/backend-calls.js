@@ -2,7 +2,6 @@ const backendURL = "https://localhost:3000";
 const resourceBackendURL = 'https://localhost:3001/resources/';
 
 const backend = {
-
     getResourceURL(name) {
         return resourceBackendURL + name;
     },

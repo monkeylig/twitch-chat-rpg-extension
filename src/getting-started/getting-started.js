@@ -1,6 +1,7 @@
 import React from 'react';
 import '../App.css';
 import RPGButton from '../common/rpg-button';
+import RPGUI from '../common/rpg-ui-elements';
 import './getting-started.css'
 import '../common/backend-calls';
 import backend from '../common/backend-calls';
@@ -11,7 +12,7 @@ class SignUp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {page: 'welcome'};
-
+        //this.state = {page: 'pick-name'};
         this.avatars = [];
         this.navigateAvatarPick = this.navigateAvatarPick.bind(this);
     }
@@ -54,12 +55,24 @@ class SignUp extends React.Component {
         }
     }
 
+    renderNamePick(props) {
+        return (
+            <div id="content-frame">
+                <h1>Embark</h1>
+                <RPGUI.TextBox id="name-picker">Name</RPGUI.TextBox>
+                <RPGUI.Button id="begin-btn">Begin Adventure</RPGUI.Button>
+            </div>
+        );
+    }
+
     render() {
         switch(this.state.page) {
             case 'welcome':
                 return this.renderWelcome(this.props);
             case 'pick-avatar':
                 return this.renderAvatarPick(this.props);
+            case 'pick-name':
+                return this.renderNamePick(this.props);
             default:
                 return <h1>Sorry something went wrong.</h1>;
         }

@@ -29,6 +29,11 @@ class App extends React.Component {
 }
 
 function Landing(props) {
+  window.Twitch.ext.onAuthorized((auth) => {
+    console.log('The JWT that will be passed to the EBS is', auth.token);
+    console.log('The channel ID is', auth.userId);
+    window.Twitch.ext.rig.log('Broadcaster ' + window.Twitch.ext.configuration.broadcaster)
+  });
   if(props.onNavigate)
   {
     setTimeout(() => {
