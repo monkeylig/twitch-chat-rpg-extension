@@ -8,15 +8,35 @@ import backend from '../common/backend-calls';
 
 class SignUp extends React.Component {
 
-    avatars;
     constructor(props) {
         super(props);
         this.state = {page: 'welcome'};
         //this.state = {page: 'pick-name'};
         this.avatars = [];
+        this.selectedAvatar = '';
+        this.selectedName = '';
         this.navigateAvatarPick = this.navigateAvatarPick.bind(this);
+        this.onAvaterPicked = this.onAvaterPicked.bind(this);
+        this.navigateNamePick = this.navigateNamePick.bind(this);
+        this.onNameChanged = this.onNameChanged.bind(this);
+        this.onBeginAdventure = this.onBeginAdventure.bind(this);
     }
 
+    onBeginAdventure() {
+        if(!this.selectedName)
+        {
+            
+        }
+    }
+
+    onNameChanged(event) {
+        this.selectedName = event.target.value;
+    }
+    
+    onAvaterPicked(event) {
+        this.selectedAvatar = event.target.value;
+    }
+    
     navigateAvatarPick() {
         backend.getStartingAvatars().then((data) => {
             this.avatars = data;
@@ -24,6 +44,15 @@ class SignUp extends React.Component {
         });
 
         this.setState({page: 'pick-avatar'})
+    }
+
+    navigateNamePick() {
+        if(!this.selectedAvatar)
+        {
+            return;
+        }
+
+        this.setState({page: 'pick-name'});
     }
 
     renderWelcome(props) {
@@ -42,7 +71,10 @@ class SignUp extends React.Component {
         }
         else {
             const avatarImgs = this.avatars.map((url, index) => 
-                <img key={index} src={backend.getResourceURL(url)} className='avatarImg'/>
+            <label key={index}>
+                <input type="radio" name="avatar" className="inputProxy" value={url} onChange={this.onAvaterPicked}/>
+                <img src={backend.getResourceURL(url)} id={"avatar" + index} className='avatarImg'/>
+            </label>
             );
             return (
                 <div id="content-frame">
@@ -50,6 +82,7 @@ class SignUp extends React.Component {
                     <div>
                         {avatarImgs}
                     </div>
+                    <RPGUI.Button id="begin-btn" onClick={this.navigateNamePick}>Next</RPGUI.Button>
                 </div>
             );   
         }
@@ -59,8 +92,8 @@ class SignUp extends React.Component {
         return (
             <div id="content-frame">
                 <h1>Embark</h1>
-                <RPGUI.TextBox id="name-picker">Name</RPGUI.TextBox>
-                <RPGUI.Button id="begin-btn">Begin Adventure</RPGUI.Button>
+                <RPGUI.TextBox id="name-picker" onInput={this.onNameChanged}>Name</RPGUI.TextBox>
+                <RPGUI.Button id="begin-btn" onClick={this.onBeginAdventure}>Begin Adventure</RPGUI.Button>
             </div>
         );
     }

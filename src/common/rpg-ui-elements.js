@@ -14,10 +14,10 @@ function RPGButton(props) {
 
 function RPGTextBox(props) {
     return (
-        <div id={props.id} class="inp">
-                <input type="text" id="inp" placeholder="&nbsp;"/>
-                <span class="label">{props.children}</span>
-                <span class="focus-bg"></span>
+        <div id={props.id} className="inp">
+                <input type="text" id="inp" placeholder="&nbsp;" onInput={props.onInput}/>
+                <span className="label">{props.children}</span>
+                <span className="focus-bg"></span>
         </div>
     );
 }
