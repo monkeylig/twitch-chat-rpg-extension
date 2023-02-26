@@ -1,17 +1,19 @@
 import React from 'react';
+
 import '../App.css';
+import './getting-started.css'
+
 import RPGButton from '../common/rpg-button';
 import RPGUI from '../common/rpg-ui-elements';
-import './getting-started.css'
-import '../common/backend-calls';
+
 import backend from '../common/backend-calls';
+import frontend_context from '../common/frontend-context';
 
 class SignUp extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {page: 'welcome'};
-        //this.state = {page: 'pick-name'};
         this.avatars = [];
         this.selectedAvatar = '';
         this.selectedName = '';
@@ -25,8 +27,13 @@ class SignUp extends React.Component {
     onBeginAdventure() {
         if(!this.selectedName)
         {
-            
+            return;
         }
+
+        backend.createNewPlayer(this.selectedName, frontend_context.playerId, this.selectedAvatar)
+        .then((data) => {
+            this.props.onNavigate('game');
+        });
     }
 
     onNameChanged(event) {
@@ -110,10 +117,6 @@ class SignUp extends React.Component {
                 return <h1>Sorry something went wrong.</h1>;
         }
     }   
-}
-
-function avatarPicker(props) {
-    
 }
 
 export default SignUp;

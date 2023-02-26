@@ -20,6 +20,12 @@
       "isEphemeral": false,
       "isOrigin": true,
       "value": "https://localhost"
+    },
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "https://localhost:3000"
     }
   ],
   "extensionViews": [
@@ -61,6 +67,28 @@
       "id": "2",
       "isPopout": false,
       "label": "Small View",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "component",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "817665171",
+      "configurationAnchor": "component",
+      "displayChannelName": "jhard9000",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 852,
+        "height": 480
+      },
+      "id": "3",
+      "isPopout": false,
+      "label": "super small",
       "linked": false,
       "linkedUserId": "",
       "orientation": "Portrait",
@@ -110,7 +138,7 @@
         "aspectRatioX": 200,
         "aspectRatioY": 300,
         "scalePixels": 1024,
-        "targetHeight": 5000,
+        "targetHeight": 7000,
         "size": 0,
         "zoom": false,
         "zoomPixels": 0,
