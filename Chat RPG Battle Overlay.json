@@ -154,7 +154,7 @@
     "whitelistedPanelUrls": []
   },
   "frontendCommand": "",
-  "frontendFolderName": "",
+  "frontendFolderName": "C:\\Users\\jhard\\Documents\\Abominable Narwhal\\Chat RPG\\twitch-chat-rpg-extension",
   "name": "Chat RPG Battle Overlay",
   "usingRandomFrontendHostingPort": false,
   "version": 3

@@ -5,7 +5,7 @@ function endpoint_url(name, queryString = '') {
     return name + '?platform=twitch' + queryString;
 }
 
-function backendCall(endpoint, method='GET', payload = null) {
+async function backendCall(endpoint, method='GET', payload = null) {
     const headers = {}
     let body = '';
 
@@ -23,27 +23,14 @@ function backendCall(endpoint, method='GET', payload = null) {
     }
 
     fetchOptions.headers = headers;
-    const requestPromise = new Promise((resolve, reject) => {
-        fetch(backendURL + endpoint, fetchOptions)
-        .then(response => {
-            if (response.status === 200) {
-                return response.json();
-            }
-            else {
-                console.log(response.status, response.statusText);
-                reject(response.statusText);
-            }
-        })
-        .then(data => {
-            resolve(data);
-        })
-        .catch(error => {
-            console.log('Fetch Error :-S', error);
-            reject(error);
-        });
-    });
+    const response = await fetch(backendURL + endpoint, fetchOptions);
+    const data = await response.json();
 
-    return requestPromise;
+    if(response.status != 200) {
+        throw data;
+    }
+
+    return data;
 }
 const backend = {
     getResourceURL(name) {

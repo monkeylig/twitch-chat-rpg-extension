@@ -14,6 +14,7 @@ class GameMenu extends React.Component {
 
         this.onNavigate = this.onNavigate.bind(this);
 
+        this.mounted = false;
         this.navData = [
             {
                 id: "menu-btn1",
@@ -53,25 +54,33 @@ class GameMenu extends React.Component {
         ]
     }
 
+    async checkPlayerExists() {
+        await this.props.waitForFrontendContext();
+
+        try {
+            await backend.getPlayer(frontend_context.playerId);
+        }
+        catch (error) {
+            if(error.errorCode == 2) {
+                return false;
+            }
+            throw error;
+        }
+
+        return true;
+    }
+
     componentDidMount() {
-        this.props.onFrontendContextAvailable()
-        .then(() => {
-            console.log(frontend_context.playerId);
-            backend.getPlayer(frontend_context.playerId).then(playerData => {
-                if(!playerData.hasOwnProperty('twitchId')) {
-                    this.props.onNavigate('get-started');
+        if(!this.state.playerDataLoaded) {
+            this.checkPlayerExists().then((result) => {
+                if(result) {
+                    this.setState({playerDataLoaded: true});
                 }
                 else {
-                    this.setState(
-                        {
-                            playerDataLoaded: true
-                        });
+                    this.props.onNavigate('get-started');
                 }
-            })
-            .catch(error => {
-                this.props.onNavigate('get-started');
             });
-        });
+        }
     }
 
     onNavigate(event) {
@@ -103,7 +112,6 @@ class GameMenu extends React.Component {
             </RPGUI.MediaScroller>
             );
     }
-
     render() {
         if(this.state.playerDataLoaded) {
             return (

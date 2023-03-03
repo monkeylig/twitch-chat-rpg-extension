@@ -85,8 +85,8 @@ class SignUp extends React.Component {
             );
             return (
                 <div id="content-frame">
-                    <h1>Choose an Avatar!</h1>
-                    <div>
+                    <h1 className='title'>Choose an Avatar!</h1>
+                    <div id="avatar-pick">
                         {avatarImgs}
                     </div>
                     <RPGUI.Button id="begin-btn" onClick={this.navigateNamePick}>Next</RPGUI.Button>
@@ -98,7 +98,7 @@ class SignUp extends React.Component {
     renderNamePick(props) {
         return (
             <div id="content-frame">
-                <h1>Embark</h1>
+                <h1 className='title'>Embark</h1>
                 <RPGUI.TextBox id="name-picker" onInput={this.onNameChanged}>Name</RPGUI.TextBox>
                 <RPGUI.Button id="begin-btn" onClick={this.onBeginAdventure}>Begin Adventure</RPGUI.Button>
             </div>

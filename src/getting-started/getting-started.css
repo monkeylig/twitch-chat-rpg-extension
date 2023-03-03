@@ -6,6 +6,11 @@
     line-height: 100%;
 }
 
+#avatar-pick {
+    margin: auto;
+    text-align: center;
+}
+
 #intro-text {
     line-height: 1.1em;
     text-align: center;
@@ -29,6 +34,11 @@
     border-color: yellow;
     border-radius: 3px;
     z-index: 1;
+}
+
+.title {
+    text-align: center;
+    font-size: 1.5em;
 }
 
 #name-picker {

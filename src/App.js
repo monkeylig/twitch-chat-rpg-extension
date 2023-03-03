@@ -12,7 +12,7 @@ class App extends React.Component {
         this.state = { page: 'game' };
 
         this.navigate = this.navigate.bind(this);
-        this.onFrontendContextAvailable = this.onFrontendContextAvailable.bind(this);
+        this.waitForFrontendContext = this.waitForFrontendContext.bind(this);
 
         this.frontend_promise = new Promise((resolve, reject) => {
             window.Twitch.ext.onAuthorized((auth) => {
@@ -25,7 +25,7 @@ class App extends React.Component {
         });
     }
 
-    async onFrontendContextAvailable() {
+    async waitForFrontendContext() {
         await this.frontend_promise;
         return;
     }
@@ -39,9 +39,9 @@ class App extends React.Component {
             case 'landing':
                 return <Landing onNavigate={this.navigate} />;
             case 'get-started':
-                return <SignUp onNavigate={this.navigate}/>;
+                return <SignUp onNavigate={this.navigate} />;
             case 'game':
-                return <GameMenu onNavigate={this.navigate} onFrontendContextAvailable={this.onFrontendContextAvailable}/>;
+                return <GameMenu onNavigate={this.navigate} waitForFrontendContext={this.waitForFrontendContext}/>;
             default:
                 return <p>Sorry, somthing went wrong</p>;
         }
