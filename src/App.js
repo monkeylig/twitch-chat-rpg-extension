@@ -5,18 +5,50 @@ import frontend_context from './common/frontend-context';
 
 import SignUp from './getting-started/getting-started'
 import GameMenu from './game/game_menu';
+import BattleGame from './game/battle_game';
+import backend from './common/backend-calls';
 
 class App extends React.Component {
+    nextPageProps;
+
     constructor(props) {
         super(props);
-        this.state = { page: 'game' };
+        this.state = { page: 'landing' };
 
         this.navigate = this.navigate.bind(this);
+    }
+
+    navigate(nextPage, nextPageProps = null) {
+        this.nextPageProps = nextPageProps;
+        this.setState({ page: nextPage });
+    }
+
+    render() {
+        switch (this.state.page) {
+            case 'landing':
+                return <Landing onNavigate={this.navigate}/>;
+            case 'get-started':
+                return <SignUp onNavigate={this.navigate} />;
+            case 'game':
+                return <GameMenu onNavigate={this.navigate} {...this.nextPageProps}/>;
+            case 'battle':
+                return <BattleGame onNavigate={this.navigate} {...this.nextPageProps}/>;
+            default:
+                return <p>Sorry, somthing went wrong</p>;
+        }
+    }
+}
+
+class Landing extends React.Component {
+
+    constructor(props) {
+        super(props);
         this.waitForFrontendContext = this.waitForFrontendContext.bind(this);
 
         this.frontend_promise = new Promise((resolve, reject) => {
             window.Twitch.ext.onAuthorized((auth) => {
                 frontend_context.playerId = auth.userId;
+                frontend_context.channelId = auth.channelId;
                 console.log('The JWT that will be passed to the EBS is', auth.token);
                 console.log('The user ID is', frontend_context.playerId);
                 window.Twitch.ext.rig.log('Broadcaster ' + window.Twitch.ext.configuration.broadcaster)
@@ -34,27 +66,36 @@ class App extends React.Component {
         this.setState({ page: nextPage });
     }
 
+    componentDidMount() {
+        this.#tryJoinGame().then((context) => {
+            if(!context) {
+                this.props.onNavigate('get-started');
+                return;
+            }
+
+            this.props.onNavigate('game', {playerData: context.playerData, gameState: context.gameState});
+        });
+    }
+
     render() {
-        switch (this.state.page) {
-            case 'landing':
-                return <Landing onNavigate={this.navigate} />;
-            case 'get-started':
-                return <SignUp onNavigate={this.navigate} />;
-            case 'game':
-                return <GameMenu onNavigate={this.navigate} waitForFrontendContext={this.waitForFrontendContext}/>;
-            default:
-                return <p>Sorry, somthing went wrong</p>;
+        return <p>Loading Chat RPG</p>;
+    }
+
+    async #tryJoinGame() {
+        await this.waitForFrontendContext();
+
+        try {
+            return {
+                playerData: await backend.getPlayer(frontend_context.playerId),
+                gameState: await backend.joinGame(frontend_context.playerId, frontend_context.channelId)};
+        }
+        catch (error) {
+            if(error.errorCode == 2) {
+                return false;
+            }
+            throw error;
         }
     }
-}
-
-function Landing(props) {
-    if (props.onNavigate) {
-        setTimeout(() => {
-            props.onNavigate('get-started');
-        }, 1000);
-    }
-    return <p>Loading Chat RPG</p>
 }
 
 export default App;

@@ -1,8 +1,14 @@
 const backendURL = "https://localhost:3000";
 const resourceBackendURL = 'https://localhost/resources/';
 
-function endpoint_url(name, queryString = '') {
-    return name + '?platform=twitch' + queryString;
+function endpoint_url(name, ...queryStrings) {
+    let queryString = "?platform=twitch";
+
+    for(const query of queryStrings) {
+        queryString += '&' + query;
+    }
+
+    return '/' + name + queryString;
 }
 
 async function backendCall(endpoint, method='GET', payload = null) {
@@ -65,15 +71,15 @@ const backend = {
     },
 
     createNewPlayer(name, playerId, avatar) {
-        return backendCall(endpoint_url('/create_new_player'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
+        return backendCall(endpoint_url('create_new_player'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
     },
 
     getPlayer(playerId) {
-        return backendCall(endpoint_url('/get_player', '&playerId=' + playerId));
+        return backendCall(endpoint_url('get_player', 'playerId=' + playerId));
     },
 
-    joinGame(playerId) {
-        return backendCall(endpoint_url('/join_game', '&playerId=' + playerId));
+    joinGame(playerId, gameId) {
+        return backendCall(endpoint_url('join_game', 'playerId=' + playerId, 'gameId=' + gameId), 'POST');
     }
 };
 

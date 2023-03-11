@@ -1,10 +1,9 @@
 import React from 'react';
 
 import '../App.css';
-import './getting-started.css'
 
-import RPGButton from '../common/rpg-button';
 import RPGUI from '../common/rpg-ui-elements';
+import './getting-started.css'
 
 import backend from '../common/backend-calls';
 import frontend_context from '../common/frontend-context';
@@ -32,7 +31,7 @@ class SignUp extends React.Component {
 
         backend.createNewPlayer(this.selectedName, frontend_context.playerId, this.selectedAvatar)
         .then((data) => {
-            this.props.onNavigate('game');
+            this.props.onNavigate('landing');
         });
     }
 
@@ -64,9 +63,9 @@ class SignUp extends React.Component {
 
     renderWelcome(props) {
         return (
-            <div id="content-frame">
+            <div id="content-frame" className='center_column'>
                 <p id="intro-text">Welcome to Chat RPG! Click the button below to begin your journey for adventure and treasure.</p>
-                <RPGButton id='play-btn' onClick={this.navigateAvatarPick} >Play</RPGButton>
+                <RPGUI.Button id='play-btn' className="responsive-btn" onClick={this.navigateAvatarPick} >Play</RPGUI.Button>
             </div>
         );
     }
@@ -89,7 +88,7 @@ class SignUp extends React.Component {
                     <div id="avatar-pick">
                         {avatarImgs}
                     </div>
-                    <RPGUI.Button id="begin-btn" onClick={this.navigateNamePick}>Next</RPGUI.Button>
+                    <RPGUI.Button className="responsive-btn" id="begin-btn" onClick={this.navigateNamePick}>Next</RPGUI.Button>
                 </div>
             );   
         }
@@ -100,7 +99,8 @@ class SignUp extends React.Component {
             <div id="content-frame">
                 <h1 className='title'>Embark</h1>
                 <RPGUI.TextBox id="name-picker" onInput={this.onNameChanged}>Name</RPGUI.TextBox>
-                <RPGUI.Button id="begin-btn" onClick={this.onBeginAdventure}>Begin Adventure</RPGUI.Button>
+                <RPGUI.Button className="responsive-btn long" id="begin-btn" onClick={this.onBeginAdventure}>Begin Adventure</RPGUI.Button>
+                <RPGUI.Button className="responsive-btn short" id="begin-btn" onClick={this.onBeginAdventure}>Begin</RPGUI.Button>
             </div>
         );
     }

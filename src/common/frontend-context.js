@@ -1,5 +1,6 @@
 const frontend_context = {
-    playerId: null
+    playerId: null,
+    channelId: null
 };
 
 export default frontend_context;

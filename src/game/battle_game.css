@@ -1,0 +1,270 @@
+#content-frame.dark {
+    background-color: #1b2028;
+}
+
+#header-section {
+    display: flex;
+    width: 100%;
+    height: 11%;
+}
+
+.battle_header {
+    flex: 1 1 auto;
+    width: 1px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 5px;
+    background-color: #1b2028;
+    border-radius: 16px;
+    position: relative;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    text-align: center;
+    color: #f1f3f3;
+}
+
+.battle_header::after {
+    content: "";
+    display: block;
+    top: -3px;
+    left: -3px;
+    bottom: -3px;
+    right: -3px;
+    z-index: -1;
+    position: absolute;
+    border-radius: 16px;
+}
+
+.battle_header h2 {
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.battle_header p {
+    font-size: 0.5em;
+}
+
+.battle_header p, h2 {
+    margin: 0;
+}
+
+#left_header{
+    background-image: linear-gradient(135deg, #81252d, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
+}
+
+#left_header::after {
+    background-image: linear-gradient(135deg, #ff4655, #734a58 20%, #1b2028 30%, #2c333e 100%);
+}
+
+#right_header {
+    background-image: linear-gradient(215deg, #2235af, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
+}
+
+#right_header::after {
+    background-image: linear-gradient(215deg, #3852ff, #391a72 30%, #1b2028 30%, #2c333e 100%);
+}
+
+.battle_header .rpg-bar {
+    height: 7px;
+    border: 1px solid rgba(255,255,255,1);
+    border-radius: 5px;
+}
+
+#avatar-section {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 51%;
+}
+
+#avatar-section .battle-avatar {
+    flex: 1 1 auto;
+    position: relative;
+}
+
+.battle-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 3px solid;
+    border-radius: 5px;
+}
+
+#left-avatar {
+    border-color: #ff4655;
+}
+
+#right-avatar {
+    border-color: #3852ff;
+}
+
+.counter_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+}
+
+.counter_bar .item {
+    flex: 1 1 auto;
+    width: 1px;
+    height: 100%;
+    background-color: #3852ff;
+}
+
+.counter_bar p {
+    position: relative;
+    left: 5px;
+    bottom: -1px;
+}
+
+#ap_counter {
+    position: absolute;
+    bottom: 10px;
+    left: 5px;
+    width: 100px;
+    height: 20px;
+}
+
+#battle-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 30%;
+}
+
+#options-section {
+    width: 100%;
+    height: 8%;
+}
+
+#options-section .battle-btn {
+    width: 30%;
+}
+
+#options-section .battle-btn p:hover {
+    color: #1b2028;
+}
+
+.battle-btn {
+    padding: 0px;
+    margin: 0;
+    font-size: 1em;
+    font-weight: 300;
+    height: 100%;
+}
+
+@media(max-width: 200px) {
+    .battle-avatar img {
+        border-width: 1px;
+    }
+
+    .battle_header {
+        border-radius: 4px;
+        padding: 2px;
+        border-width: 1px;
+    }
+    
+    .battle_header::after {
+        border-radius: 4px;
+    }
+
+    .battle_header h2 {
+        display: none;
+    }
+    
+    .battle_header p {
+        display: none;
+    }
+    
+    .counter_bar p {
+        display: none;
+    }
+
+    .battle_header .rpg-bar {
+        height: 100%;
+        border-radius: 5px;
+    }
+
+    #ap_counter {
+        left: 10%;
+        width: 70%;
+        height: 7px;
+    }
+
+    .battle-btn {
+        font-size: 0.1em;
+    }
+}
+
+@media(200px < width <= 255px) {
+
+    .battle_header {
+        border-radius: 8px;
+    }
+    
+    .battle_header::after {
+        border-radius: 8px;
+    }
+
+    .battle_header h2 {
+        font-size: 0.45em;
+    }
+    
+    .battle_header p {
+        font-size: 0.4em;
+    }
+
+    .counter_bar p {
+        left: 2px;
+        bottom: -1px;
+    }
+
+    #ap_counter {
+        width: 70px;
+        height: 10px;
+        font-size: 0.7em;
+    }
+
+    .battle-btn {
+        font-size: 0.45em;
+    }
+    
+}
+
+@media(255px < width <= 400px) {
+
+    .battle_header {
+        border-radius: 8px;
+    }
+    
+    .battle_header::after {
+        border-radius: 8px;
+    }
+
+    .battle_header h2 {
+        font-size: 0.6em;
+    }
+    
+    .battle_header p {
+        font-size: 0.5em;
+    }
+
+    .counter_bar p {
+        left: 2px;
+        bottom: -1px;
+    }
+
+    #ap_counter {
+        width: 70px;
+        height: 10px;
+        font-size: 0.7em;
+    }
+
+    .battle-btn {
+        font-size: 0.6em;
+    }
+}

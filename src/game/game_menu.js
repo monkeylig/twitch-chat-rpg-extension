@@ -7,12 +7,28 @@ import '../App.css';
 import './game_menu.css';
 
 class GameMenu extends React.Component {
+    playerState;
+    gameState;
 
     constructor(props) {
         super(props);
-        this.state = {playerDataLoaded : false};
+
+        if(this.props.gameState) {
+            this.gameState = this.props.gameState;
+        }
+        else {
+            this.gameState = { monsters: [] };
+        }
+
+        if(this.props.playerState) {
+            this.playerState = this.props.playerState;
+        }
+        else {
+            this.playerState = {};
+        }
 
         this.onNavigate = this.onNavigate.bind(this);
+        this.renderBattle = this.renderBattle.bind(this);
 
         this.mounted = false;
         this.navData = [
@@ -34,7 +50,7 @@ class GameMenu extends React.Component {
             }
         ]
 
-        this.pagaData = [
+        this.pageData = [
             {
                 id: "page1",
                 htmlId: "menu-page",
@@ -52,35 +68,6 @@ class GameMenu extends React.Component {
                 onRenderPage: this.renderSettings
             }
         ]
-    }
-
-    async checkPlayerExists() {
-        await this.props.waitForFrontendContext();
-
-        try {
-            await backend.getPlayer(frontend_context.playerId);
-        }
-        catch (error) {
-            if(error.errorCode == 2) {
-                return false;
-            }
-            throw error;
-        }
-
-        return true;
-    }
-
-    componentDidMount() {
-        if(!this.state.playerDataLoaded) {
-            this.checkPlayerExists().then((result) => {
-                if(result) {
-                    this.setState({playerDataLoaded: true});
-                }
-                else {
-                    this.props.onNavigate('get-started');
-                }
-            });
-        }
     }
 
     onNavigate(event) {
@@ -104,23 +91,38 @@ class GameMenu extends React.Component {
             defence: 0.74,
             magic: 0.58
         };
+
+        const monsterCards = [];
+        let count=0;
+        for(const monster of this.gameState.monsters) {
+            const monsterData = {
+                monsterName: monster.name,
+                monsterImage: backend.getResourceURL(monster.avatar),
+                level: monster.level,
+                attack: monster.attackRating,
+                defence: monster.defenceRating,
+                magic: monster.magicRating
+            };
+            console.log(monsterData);
+
+            monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={count}/>);
+            count++;
+        }
+
         return (
             <RPGUI.MediaScroller>
-                <RPGUI.MonsterCard {...monsterData}/>
-                <RPGUI.MonsterCard {...monsterData}/>
-                <RPGUI.MonsterCard {...monsterData}/>
+                {monsterCards}
             </RPGUI.MediaScroller>
             );
     }
     render() {
-        if(this.state.playerDataLoaded) {
-            return (
-                <div id="content-frame" className="content-flex">
-                    <MenuNav navData={this.navData} onNavigate={this.onNavigate}/>
-                    <Carousel pageData={this.pagaData}/>
-                </div>
-                );
-        }
+
+        return (
+            <div id="content-frame" className="content-flex">
+                <MenuNav navData={this.navData} onNavigate={this.onNavigate}/>
+                <Carousel pageData={this.pageData}/>
+            </div>
+            );
     }
 }
 
