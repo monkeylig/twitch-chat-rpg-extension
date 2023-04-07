@@ -1,5 +1,6 @@
 import React from 'react';
 import './common.css'
+import utility from './utility';
 
 function RPGButton(props) 
 {
@@ -67,7 +68,7 @@ function RPGMonsterCard(props) {
             <RPGProgressBar progress={props.defence}/>
             <h5>Magic</h5>
             <RPGProgressBar progress={props.magic}/>
-            <RPGButton className="rpg-monster-card-btn">Fight!</RPGButton>
+            <RPGButton className="rpg-monster-card-btn" onClick={props.onFightClick}>Fight!</RPGButton>
         </RPGCard>
     );
 }
@@ -80,6 +81,61 @@ function RPGMediaScroller(props) {
     );
 }
 
+function RPGSprite(props) {
+
+    const autoplay = utility.getValue(props.autoplay, false);
+    const frameWidth = utility.getValue(props.frameWidth, 50);
+    const frameHeight = utility.getValue(props.frameHeight, 50);
+    const frameCount = utility.getValue(props.frameCount, 1);
+    const duration = utility.getValue(props.duration, 1);
+    const iterationCount = utility.getValue(props.iterationCount, "infinite");
+    const spriteSheet = utility.getValue(props.spriteSheet, "");
+
+    const containerStyle = {
+        aspectRatio: `${frameWidth} / ${frameHeight}`,
+    };
+
+    const style = {
+        width: `${frameCount * 100}%`,
+        animationDuration: `${duration}s`,
+        animationIterationCount: `${iterationCount}`,
+        animationTimingFunction: `steps(${frameCount})`,
+        animationPlayState: autoplay ? 'running' : 'paused',
+        animationName: 'play-rpg-sprite'
+    };
+
+    return(
+    <div id={props.id} className="rpg-sprite" style={containerStyle} onClick={props.onClick}>
+        <img src={spriteSheet} style={style}></img>
+    </div>
+);
+}
+
+function RPGSprite_play(id) {
+    const sprite = document.querySelector(`#${id} img`);
+    if(!sprite) {
+        return;
+    }
+
+    sprite.style['animation-name'] = '';
+
+    requestAnimationFrame((time) => {
+        requestAnimationFrame((time) => {
+            sprite.style['animation-name'] = 'play-rpg-sprite';
+            sprite.style['animation-play-state'] = 'running';
+        });
+    });
+}
+
+function RPGSprite_onAnimationEnd(id, callback) {
+    const sprite = document.querySelector(`#${id} img`);
+    if(!sprite) {
+        return;
+    }
+
+    sprite.onanimationend = callback;    
+}
+
 const RPGUI = {
     Button: RPGButton,
     TextBox: RPGTextBox,
@@ -87,6 +143,9 @@ const RPGUI = {
     MonsterCard: RPGMonsterCard,
     ProgressBar: RPGProgressBar,
     MediaScroller: RPGMediaScroller,
+    Sprite: RPGSprite,
+    Sprite_play: RPGSprite_play,
+    Sprite_onAnimationEnd: RPGSprite_onAnimationEnd,
     RPGRed: "#ff4655",
     RPGBlue: "#3852ff",
     RPGGreen: "#2bff5d"

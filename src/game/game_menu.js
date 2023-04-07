@@ -7,28 +7,13 @@ import '../App.css';
 import './game_menu.css';
 
 class GameMenu extends React.Component {
-    playerState;
-    gameState;
 
     constructor(props) {
         super(props);
 
-        if(this.props.gameState) {
-            this.gameState = this.props.gameState;
-        }
-        else {
-            this.gameState = { monsters: [] };
-        }
-
-        if(this.props.playerState) {
-            this.playerState = this.props.playerState;
-        }
-        else {
-            this.playerState = {};
-        }
-
         this.onNavigate = this.onNavigate.bind(this);
         this.renderBattle = this.renderBattle.bind(this);
+        this.onFightClick = this.onFightClick.bind(this);
 
         this.mounted = false;
         this.navData = [
@@ -70,6 +55,13 @@ class GameMenu extends React.Component {
         ]
     }
 
+    onFightClick(monsterId) {
+        backend.startBattle(this.props.playerData.id, this.props.gameState.id, monsterId)
+        .then(battleState => {
+            this.props.onNavigate('battle', battleState);
+        });
+    }
+
     onNavigate(event) {
         const navNumber = event.target.id.slice(-1);
         document.getElementById("page" + navNumber).checked = true;
@@ -84,17 +76,10 @@ class GameMenu extends React.Component {
     }
 
     renderBattle() {
-        const monsterData = {
-            monsterName: 'Skellingting',
-            level: 40,
-            attack: 0.35,
-            defence: 0.74,
-            magic: 0.58
-        };
-
         const monsterCards = [];
-        let count=0;
-        for(const monster of this.gameState.monsters) {
+        let index=0;
+        const monsters = this.props.gameState ? this.props.gameState.monsters : [];
+        for(const monster of monsters) {
             const monsterData = {
                 monsterName: monster.name,
                 monsterImage: backend.getResourceURL(monster.avatar),
@@ -103,10 +88,9 @@ class GameMenu extends React.Component {
                 defence: monster.defenceRating,
                 magic: monster.magicRating
             };
-            console.log(monsterData);
 
-            monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={count}/>);
-            count++;
+            monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={index} onFightClick={() => this.onFightClick(monster.id)}/>);
+            index++;
         }
 
         return (

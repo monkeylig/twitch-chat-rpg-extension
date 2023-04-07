@@ -340,6 +340,31 @@ body {
   width: 5px;
 }
 
+.rpg-sprite {
+  overflow: hidden;
+  z-index: 2;
+}
+
+.rpg-sprite img {
+  position: relative;
+  z-index: 2;
+  object-fit: contain;
+  object-position: top left;
+  transform-origin: top left;
+  transform: translate(0, 0);
+  height: 100%; /*Limiting to only support single row sprite sheets*/
+}
+
+@keyframes play-rpg-sprite {
+  0% {
+      transform: translateX(0);
+  }
+
+  100% {
+      transform: translateX(-100%);
+  }
+}
+
 @media(min-width: 400px) {
   .rpg-monster-card {
     height: 210px;

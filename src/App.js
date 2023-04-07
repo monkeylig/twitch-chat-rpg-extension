@@ -50,8 +50,8 @@ class Landing extends React.Component {
                 frontend_context.playerId = auth.userId;
                 frontend_context.channelId = auth.channelId;
                 console.log('The JWT that will be passed to the EBS is', auth.token);
-                console.log('The user ID is', frontend_context.playerId);
-                window.Twitch.ext.rig.log('Broadcaster ' + window.Twitch.ext.configuration.broadcaster)
+                console.log('The User ID is', frontend_context.playerId);
+                console.log('The Channel ID is', auth.channelId);
                 resolve(auth);
             });
         });
@@ -72,7 +72,6 @@ class Landing extends React.Component {
                 this.props.onNavigate('get-started');
                 return;
             }
-
             this.props.onNavigate('game', {playerData: context.playerData, gameState: context.gameState});
         });
     }
@@ -85,9 +84,10 @@ class Landing extends React.Component {
         await this.waitForFrontendContext();
 
         try {
+            const playerData = await backend.getPlayer(frontend_context.playerId);
             return {
-                playerData: await backend.getPlayer(frontend_context.playerId),
-                gameState: await backend.joinGame(frontend_context.playerId, frontend_context.channelId)};
+                playerData: playerData,
+                gameState: await backend.joinGame(playerData.id, frontend_context.channelId)};
         }
         catch (error) {
             if(error.errorCode == 2) {

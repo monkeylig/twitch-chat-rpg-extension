@@ -2,7 +2,7 @@ const backendURL = "https://localhost:3000";
 const resourceBackendURL = 'https://localhost/resources/';
 
 function endpoint_url(name, ...queryStrings) {
-    let queryString = "?platform=twitch";
+    let queryString = queryStrings.length ? "?" : '';
 
     for(const query of queryStrings) {
         queryString += '&' + query;
@@ -44,43 +44,29 @@ const backend = {
     },
 
     getStartingAvatars() {
-        const requestPromise = new Promise((resolve, reject) => {
-            fetch(backendURL + "/get_starting_avatars", {
-                credentials: 'omit',
-                mode: 'cors'
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                }
-                else {
-                    console.log(response.status, response.statusText);
-                    reject(response.statusText);
-                }
-            })
-            .then(data => {
-                resolve(data);
-            })
-            .catch(error => {
-                console.log('Fetch Error :-S', error);
-                reject(error);
-            });
-        });
-
-        return requestPromise;
+        return backendCall(endpoint_url('get_starting_avatars'));
     },
 
     createNewPlayer(name, playerId, avatar) {
-        return backendCall(endpoint_url('create_new_player'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
+        return backendCall(endpoint_url('create_new_player', 'platform=twitch'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
     },
 
     getPlayer(playerId) {
-        return backendCall(endpoint_url('get_player', 'playerId=' + playerId));
+        return backendCall(endpoint_url('get_player', 'platform=twitch', `playerId=${playerId}`));
     },
 
     joinGame(playerId, gameId) {
-        return backendCall(endpoint_url('join_game', 'playerId=' + playerId, 'gameId=' + gameId), 'POST');
+        return backendCall(endpoint_url('join_game', `playerId=${playerId}`, `gameId=${gameId}`), 'POST');
+    },
+
+    startBattle(playerId, gameId, monsterId) {
+        return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST');
+    },
+
+    battleAction(battleId, actionType) {
+        return backendCall(endpoint_url('battle_action', `battleId=${battleId}`, `actionType=${actionType}`), 'POST');
     }
+
 };
 
 export default backend;

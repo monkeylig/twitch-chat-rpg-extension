@@ -11,16 +11,15 @@
 .battle_header {
     flex: 1 1 auto;
     width: 1px;
-
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
-    padding: 5px;
+    /*padding: 5px;*/
     background-color: #1b2028;
-    border-radius: 16px;
+    /*border-radius: 16px;*/
     position: relative;
-    border: 3px solid transparent;
+    /*border: 3px solid transparent;*/
     background-clip: padding-box;
     text-align: center;
     color: #f1f3f3;
@@ -74,6 +73,7 @@
 }
 
 #avatar-section {
+    position: relative;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -155,6 +155,44 @@
     font-size: 1em;
     font-weight: 300;
     height: 100%;
+}
+
+#battle-effects {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.effect-anim {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.effect-anim img {
+    z-index: 2;
+    object-fit: contain;
+    object-position: top left;
+    transform-origin: top left;
+    transform: translate(0, 0);
+    width: 1600%;
+    height: 100%;
+    animation-name: play-sprite;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: steps(16);
+    animation-play-state: running;
+}
+
+@keyframes play-sprite {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
 @media(max-width: 200px) {
