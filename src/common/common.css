@@ -348,7 +348,7 @@ body {
 .rpg-sprite img {
   position: relative;
   z-index: 2;
-  object-fit: contain;
+  object-fit: fill;
   object-position: top left;
   transform-origin: top left;
   transform: translate(0, 0);

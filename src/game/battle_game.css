@@ -15,11 +15,8 @@
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
-    /*padding: 5px;*/
     background-color: #1b2028;
-    /*border-radius: 16px;*/
     position: relative;
-    /*border: 3px solid transparent;*/
     background-clip: padding-box;
     text-align: center;
     color: #f1f3f3;
@@ -50,20 +47,20 @@
     margin: 0;
 }
 
-#left_header{
-    background-image: linear-gradient(135deg, #81252d, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
-}
-
-#left_header::after {
-    background-image: linear-gradient(135deg, #ff4655, #734a58 20%, #1b2028 30%, #2c333e 100%);
-}
-
-#right_header {
-    background-image: linear-gradient(215deg, #2235af, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
+#right_header{
+    background-image: linear-gradient(215deg, #81252d, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
 }
 
 #right_header::after {
-    background-image: linear-gradient(215deg, #3852ff, #391a72 30%, #1b2028 30%, #2c333e 100%);
+    background-image: linear-gradient(215deg, #ff4655, #734a58 20%, #1b2028 30%, #2c333e 100%);
+}
+
+#left_header {
+    background-image: linear-gradient(135deg, #2235af, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
+}
+
+#left_header::after {
+    background-image: linear-gradient(135deg, #3852ff, #391a72 30%, #1b2028 30%, #2c333e 100%);
 }
 
 .battle_header .rpg-bar {
@@ -162,38 +159,9 @@
     display: flex;
     align-items: center;
     height: 100%;
+    pointer-events: none;
 }
 
-.effect-anim {
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    z-index: 2;
-}
-
-.effect-anim img {
-    z-index: 2;
-    object-fit: contain;
-    object-position: top left;
-    transform-origin: top left;
-    transform: translate(0, 0);
-    width: 1600%;
-    height: 100%;
-    animation-name: play-sprite;
-    animation-duration: 0.5s;
-    animation-iteration-count: infinite;
-    animation-timing-function: steps(16);
-    animation-play-state: running;
-}
-
-@keyframes play-sprite {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-100%);
-    }
-}
 
 @media(max-width: 200px) {
     .battle-avatar img {

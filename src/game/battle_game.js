@@ -5,6 +5,10 @@ import backend from '../common/backend-calls';
 
 import './battle_game.css';
 
+const BattleCommands = {
+    BATTLE_ANIMATION: "battle_animation"
+}
+
 class BattleGame extends React.Component {
     constructor(props) {
         super(props);
@@ -17,16 +21,18 @@ class BattleGame extends React.Component {
         this.state = { controls: 'battle' };
 
         this.onStrike = this.onStrike.bind(this);
+        this.executeCommands = this.executeCommands.bind(this);
+        this.runBattleIteration = this.runBattleIteration.bind(this);
     }
 
-    animationCommand() {
+    battleAnimationCommand(command) {
+        const sprite = document.querySelector(`#effect`);
+        sprite.style['transform'] = `translateX(${command.animProperties.xPosition})`
         RPGUI.Sprite_play("effect");
-        RPGUI.Sprite_onAnimationEnd("effect", () => {
-            this.executeCommand();        
-        });
+        RPGUI.Sprite_onAnimationEnd("effect", this.executeCommands);
     }
 
-    executeCommand() {
+    executeCommands() {
         const command = this.commandQueue.shift();
         if(!command) {
             this.setState({ controls: 'battle' });
@@ -34,46 +40,52 @@ class BattleGame extends React.Component {
         }
 
         switch (command.type) {
-            case 'animation':
+            case BattleCommands.BATTLE_ANIMATION:
+                this.battleAnimationCommand(command);
                 break;
             default:
                 console.log("Unknown command in queue");
-                this.executeCommand();
+                this.executeCommands();
                 break;
         }
     }
 
     submitCommands(commands) {
         this.commandQueue.push(...commands);
-        this.executeCommand();
+        this.executeCommands();
+    }
+
+    runBattleIteration(battleUpdate) {
+        this.player = battleUpdate.player;
+        this.monster = battleUpdate.monster;
+
+        const commands = [];
+        battleUpdate.steps.forEach(step => {
+            switch (step.type) {
+                case 'strike':
+                    commands.push({
+                        type: BattleCommands.BATTLE_ANIMATION,
+                        animProperties: {
+                            iterationCount: 1,
+                            frameWidth: 1024,
+                            frameHeight: 1024,
+                            frameCount: 16,
+                            spriteSheet: this.strikeAnim,
+                            duration: 0.5,
+                            xPosition: step.actorId == this.player.id ? '20%' : '-20%'
+                        }
+                    });
+                    break;
+            }
+        });
+
+        this.submitCommands(commands);
     }
 
     onStrike() {
-
         this.setState({ controls: 'waiting' });
         backend.battleAction(this.battleId, 'strike')
-        .then(battleUpdate => {
-            this.player = battleUpdate.player;
-            this.monster = battleUpdate.monster;
-
-            battleUpdate.steps.forEach(element => {
-                switch (element.type) {
-                    case 'strike':
-                        this.submitCommands([{
-                            type: 'animation',
-                            animeProperties: {
-                                iterationCount: 1,
-                                frameWidth: 1024,
-                                frameHeight: 1024,
-                                frameCount: 16,
-                                spriteSheet: this.strikeAnim,
-                                duration: 0.5
-                            }
-                        }])
-                        break;
-                }
-            });
-        })
+        .then(this.runBattleIteration)
         .catch(error => {
             this.setState({ controls: 'error' });
         });
@@ -90,20 +102,17 @@ class BattleGame extends React.Component {
         return (
         <div id="content-frame" className="dark">
             <div id="header-section">
-                <BattleHeader title={this.monster.name} level={this.monster.level} id="left_header" health={this.monster.health/this.monster.maxHealth}/>
-                <BattleHeader title={this.player.name} level={this.player.level} id="right_header" health={this.player.health/this.player.maxHealth}/>
+                <BattleHeader title={this.player.name} level={this.player.level} id="left_header" health={this.player.health/this.player.maxHealth}/>
+                <BattleHeader title={this.monster.name} level={this.monster.level} id="right_header" health={this.monster.health/this.monster.maxHealth}/>
             </div>
             <div id="avatar-section">
                 <div id="battle-effects">
-                    <RPGUI.Sprite id="effect" iterationCount={1} frameWidth={1024} frameHeight={1024} frameCount={16} spriteSheet={this.strikeAnim} duration={0.5} onClick={this.onClick}/>
-                    <div className="effect-anim">
-                        <img src={this.strikeAnim}></img>
-                    </div>
+                    <RPGUI.Sprite id="effect" iterationCount={1} frameWidth={1024} frameHeight={1024} frameCount={16} spriteSheet={this.strikeAnim} duration={0.5}/>
                 </div>
-                <BattleAvatar image={backend.getResourceURL(this.monster.avatar)} id="left-avatar"/>
                 <BattleAvatar image={backend.getResourceURL(this.player.avatar)} id="right-avatar">
                     <CounterBar id="ap_counter" title="AP" maxCount={3} currentCount={this.player.ap}/>
                 </BattleAvatar>
+                <BattleAvatar image={backend.getResourceURL(this.monster.avatar)} id="left-avatar"/>
             </div>
             <BattleControls controls={this.state.controls} onStrike={this.onStrike} {...controlLables}/>
             <div id="options-section">

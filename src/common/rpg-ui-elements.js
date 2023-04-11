@@ -115,7 +115,7 @@ function RPGSprite_play(id) {
     const sprite = document.querySelector(`#${id} img`);
     if(!sprite) {
         return;
-    }
+    } 
 
     sprite.style['animation-name'] = '';
 
@@ -134,6 +134,31 @@ function RPGSprite_onAnimationEnd(id, callback) {
     }
 
     sprite.onanimationend = callback;    
+}
+
+function RPGSprite_setProperties(id, properties) {
+    const autoplay = utility.getValue(properties.autoplay, false);
+    const frameWidth = utility.getValue(properties.frameWidth, 50);
+    const frameHeight = utility.getValue(properties.frameHeight, 50);
+    const frameCount = utility.getValue(properties.frameCount, 1);
+    const duration = utility.getValue(properties.duration, 1);
+    const iterationCount = utility.getValue(properties.iterationCount, "infinite");
+    const spriteSheet = utility.getValue(properties.spriteSheet, "");
+
+    const container = document.querySelector(`#${id}`);
+    const sprite = container.querySelector(`img`);
+    if(!sprite) {
+        return;
+    }
+
+    container.style['aspect-ratio'] = `${frameWidth} / ${frameHeight}`;
+
+    sprite.style['width'] = `${frameCount * 100}%`;
+    sprite.style['animation-duration'] = `${duration}s`;
+    sprite.style['animation-iteration-count'] = iterationCount;
+    sprite.style['animation-timing-function'] = `steps(${frameCount})`;
+    sprite.style['animation-play-state'] = autoplay ? 'running' : 'paused';
+    sprite.setAttribute('src', spriteSheet)
 }
 
 const RPGUI = {
