@@ -47,11 +47,30 @@ function RPGProgressBar(props) {
     }
 
     return (
-        <div className={"rpg-bar " + props.className}>
+        <div id={props.id} className={"rpg-bar " + props.className}>
             <div style={filledStyle} className="rpg-filledbar"></div>
             <div style={emptyStyle} className="rpg-emptybar"></div>
         </div>
     );
+}
+
+function RPGProgressBar_setProperties(id, properties) {
+    const progressBar = document.getElementById(id);
+    if(!progressBar) {
+        return;
+    }
+
+    const elements = progressBar.getElementsByTagName('div');
+    elements[0]['style']['flex-grow'] = properties.progress;
+    elements[1]['style']['flex-grow'] = 1-properties.progress;
+}
+
+function RPGProgressBar_onTransitionEnd(id, callback) {
+    const fillBar = document.querySelector(`#${id} div`);
+    if(!fillBar) {
+        return;
+    }
+    fillBar.ontransitionend = callback;
 }
 
 function RPGMonsterCard(props) {
@@ -145,7 +164,7 @@ function RPGSprite_setProperties(id, properties) {
     const iterationCount = utility.getValue(properties.iterationCount, "infinite");
     const spriteSheet = utility.getValue(properties.spriteSheet, "");
 
-    const container = document.querySelector(`#${id}`);
+    const container = document.getElementById(id);
     const sprite = container.querySelector(`img`);
     if(!sprite) {
         return;
@@ -167,6 +186,8 @@ const RPGUI = {
     Card: RPGCard,
     MonsterCard: RPGMonsterCard,
     ProgressBar: RPGProgressBar,
+    ProgressBar_setProperties: RPGProgressBar_setProperties,
+    ProgressBar_onTransitionEnd: RPGProgressBar_onTransitionEnd,
     MediaScroller: RPGMediaScroller,
     Sprite: RPGSprite,
     Sprite_play: RPGSprite_play,

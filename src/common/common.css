@@ -270,6 +270,7 @@ body {
   background-color: #2e3033;
   flex-grow: 1;
   height: 100%;
+  transition: flex-grow 0.6s ease-out;
 }
 
 .rpg-filledbar {
@@ -277,7 +278,7 @@ body {
   flex-grow: 0;
   height: 100%;
   background: linear-gradient(90deg, #ff4655 0%, #3852ff 65%, #2bff5d 100%);
-  transition: 0.6s ease-out;
+  transition: flex-grow 0.6s ease-out;
 }
 
 .rpg-monster-avatar-container {
