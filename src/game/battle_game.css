@@ -43,7 +43,7 @@
     font-size: 0.5em;
 }
 
-.battle_header p, h2 {
+.battle_header p, .battle_header h2 {
     margin: 0;
 }
 
@@ -171,6 +171,10 @@
     height: 100%;
 }
 
+.battle-btn::before,  .battle-btn::after{
+    display: none;
+  }
+
 #battle-effects {
     position: absolute;
     display: flex;
@@ -179,6 +183,47 @@
     pointer-events: none;
 }
 
+#battle-dialog {
+    width: 90%;
+    padding: 0;
+    overflow: hidden;
+    background: white;
+    border-radius: 5cqw;
+    border: 0;
+    box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+#battle-dialog .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#battle-dialog .rpg-bar {
+    height: 5cqw;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    margin: 1cqw;
+}
+
+#battle-dialog .rpg-btn {
+    height: 10cqw;
+    width: 120%;
+}
+
+#battle-dialog h2 {
+    font-size: 7cqw;
+}
+
+#battle-dialog h3 {
+    font-size: 5cqw;
+}
+
+#battle-dialog h2, #battle-dialog h3 {
+    font-weight: 100;
+    margin: 1cqw;
+}
 
 @media(max-width: 200px) {
     .battle-avatar img {

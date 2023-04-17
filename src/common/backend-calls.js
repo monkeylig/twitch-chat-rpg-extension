@@ -38,6 +38,7 @@ async function backendCall(endpoint, method='GET', payload = null) {
 
     return data;
 }
+
 const backend = {
     getResourceURL(name) {
         return resourceBackendURL + name;
@@ -57,6 +58,10 @@ const backend = {
 
     joinGame(playerId, gameId) {
         return backendCall(endpoint_url('join_game', `playerId=${playerId}`, `gameId=${gameId}`), 'POST');
+    },
+
+    getGame(gameId) {
+        return backendCall(endpoint_url('get_game', `gameId=${gameId}`));
     },
 
     startBattle(playerId, gameId, monsterId) {

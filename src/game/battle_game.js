@@ -1,5 +1,4 @@
 import React from 'react';
-import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRef } from 'react';
 import '../App.css';
@@ -11,6 +10,7 @@ import './battle_game.css';
 class BattleGame extends React.Component {
     constructor(props) {
         super(props);
+        this.gameId = props.gameId;
         this.battleId = props.id;
         this.player = props.player;
         this.monster = props.monster;
@@ -26,6 +26,7 @@ class BattleGame extends React.Component {
         };
 
         this.onStrike = this.onStrike.bind(this);
+        this.backToGame = this.backToGame.bind(this);
         this.runBattleIteration = this.runBattleIteration.bind(this);
     }
 
@@ -94,6 +95,19 @@ class BattleGame extends React.Component {
 
                     await this.healthChangeCommand(target, newHealth);
                     break;
+                case 'battle_end':
+                    await this.displayDialogCommand(step.description);
+
+                    this.setState({
+                        result: battleUpdate.result,
+                        oldLevel: this.player.level,
+                        newLevel: battleUpdate.player.level
+                    });
+
+                    this.player = battleUpdate.player;
+                    const dialog = document.querySelector(`dialog`);
+                    dialog.showModal();
+                    break;
             }
         }
 
@@ -109,11 +123,21 @@ class BattleGame extends React.Component {
         });
     }
 
+    backToGame() {
+        backend.getGame(this.gameId)
+        .then(gameUpdate => {
+            this.props.onNavigate('game', {playerData: this.player, gameState: gameUpdate});
+        });
+    }
+
     render() {
 
         const controlLables = {
             strikeText: this.state.strikeLevel == 2 ? this.player.weapon.strikeAbility.name : "Strike"
         };
+
+
+    
         return (
         <div id="content-frame" className="dark">
             <div id="header-section">
@@ -133,9 +157,51 @@ class BattleGame extends React.Component {
             <div id="options-section">
                 <RPGUI.Button className="battle-btn" rpgColor="yellow">Escape</RPGUI.Button>
             </div>
+            <dialog id='battle-dialog'>
+                { this.state.result ? <ResultDialog player={this.player} result={this.state.result} oldLevel={this.state.oldLevel} newLevel={this.state.newLevel} onContinue={this.backToGame}/> : <></>}
+            </dialog>
         </div>
         );
     }
+}
+
+function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
+
+    const [level, setLevel] = useState(oldLevel);
+    const [expProgress, setExpProgress] = useState(0);
+    const animDone = useRef(false);
+    const intervalRef = useRef(0);
+
+    if(result.winner != player.id) {
+        return (
+            <div className='container'>
+                <h2>Defeat</h2>
+            </div>
+        );
+    }
+
+    if(!animDone.current) {
+        clearTimeout(intervalRef.current);
+        intervalRef.current = setTimeout(() => {
+            if(level != newLevel) {
+                setLevel(level + 1);
+            }
+            else {
+                setExpProgress(player.exp / player.expToNextLevel);
+                animDone.current = true;
+            }
+        }, 500);
+    }
+
+    return (
+        <div className='container'>
+            <h2>Victory!</h2>
+            <h3>+{result.expAward} exp</h3>
+            <RPGUI.ProgressBar id={`battle-exp-bar`} progress={expProgress} color={'#3852ff'}/>
+            <h3>Level {level}</h3>
+            <RPGUI.Button className="battle-btn" onClick={onContinue}>Continue</RPGUI.Button>
+        </div>
+    );
 }
 
 function BattleControls(props) {
@@ -190,7 +256,7 @@ function TypeWriter(props) {
         }
     }
 
-    clearInterval(intervalRef.current);
+    clearTimeout(intervalRef.current);
     if (srcIndex.current < props.children.length) {
         intervalRef.current = setTimeout(typerFunction, 50);
     }
