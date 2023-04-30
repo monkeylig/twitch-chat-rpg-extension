@@ -167,8 +167,9 @@ class BattleGame extends React.Component {
 
 function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
 
+    const startingExp = newLevel == oldLevel ? (player.exp - result.expAward) / player.expToNextLevel: 0;
     const [level, setLevel] = useState(oldLevel);
-    const [expProgress, setExpProgress] = useState(0);
+    const [expProgress, setExpProgress] = useState(startingExp);
     const animDone = useRef(false);
     const intervalRef = useRef(0);
 
