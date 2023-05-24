@@ -22,7 +22,29 @@ class BattleGame extends React.Component {
             dialog: '',
             playerHealth: this.player.health,
             monsterHealth: this.monster.health,
-            strikeLevel: this.player.strikeLevel
+            strikeLevel: this.player.strikeLevel,
+            /*result: {
+                winner: this.player.id,
+                expAward: 0,
+                drops: [
+                    {
+                        type: 'weapon',
+                        content: {
+                            name: 'jdxjbghi fkhisj',
+                            icon: 'sword-icon.png'
+                        }
+                    },
+                    {
+                        type: 'weapon',
+                        content: {
+                            name: 'sword',
+                            icon: 'sword-icon.png'
+                        }
+                    }
+                ]
+            },*/
+            oldLevel: this.player.level,
+            newLevel: this.player.level
         };
 
         this.onStrike = this.onStrike.bind(this);
@@ -86,15 +108,11 @@ class BattleGame extends React.Component {
 
         for(const step of battleUpdate.steps) {
             switch (step.type) {
-                case 'strike':
+                case 'strike': {
                     await this.displayDialogCommand(step.description);
                     await this.battleAnimationCommand(this.getAnimProperties(step, true));
-
-                    const target = step.actorId == this.player.id ? this.monster : this.player;
-                    const newHealth = step.actorId == this.player.id ? battleUpdate.monster.health : battleUpdate.player.health;
-
-                    await this.healthChangeCommand(target, newHealth);
                     break;
+                }
                 case 'battle_end':
                     await this.displayDialogCommand(step.description);
 
@@ -108,6 +126,20 @@ class BattleGame extends React.Component {
                     const dialog = document.querySelector(`dialog`);
                     dialog.showModal();
                     break;
+                case 'info':
+                    await this.displayDialogCommand(step.description);
+                    if(step.action === 'strike') {
+                        await this.battleAnimationCommand(this.getAnimProperties(step, true));
+                    }
+                    break;
+                case 'damage': {
+                    const target = step.actorId == this.player.id ? this.monster : this.player;
+                    const newHealth = step.actorId == this.player.id ? battleUpdate.monster.health : battleUpdate.player.health;
+
+                    await this.healthChangeCommand(target, newHealth);
+                    break;
+                }
+
             }
         }
 
@@ -115,6 +147,8 @@ class BattleGame extends React.Component {
     }
 
     onStrike() {
+        /*const dialog = document.querySelector(`dialog`);
+        dialog.showModal();*/
         this.setState({ controls: 'waiting' });
         backend.battleAction(this.battleId, 'strike')
         .then(this.runBattleIteration)
@@ -124,9 +158,9 @@ class BattleGame extends React.Component {
     }
 
     backToGame() {
-        backend.getGame(this.gameId)
-        .then(gameUpdate => {
-            this.props.onNavigate('game', {playerData: this.player, gameState: gameUpdate});
+        Promise.all([backend.getPlayer(this.player.id), backend.getGame(this.gameId)])
+        .then((state) => {
+            this.props.onNavigate('game', {playerData: state[0], gameState: state[1]});
         });
     }
 
@@ -194,12 +228,19 @@ function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
         }, 500);
     }
 
+    const drops = <ol className='rpg-list'>{result.drops.map((drop, index) => {
+        return (
+        <li className='drop-item' key={index}>
+            <img className='drop-icon' src={backend.getResourceURL(drop.content.icon)}/><span>{drop.content.name}</span>
+        </li>);
+    })}</ol>
     return (
         <div className='container'>
             <h2>Victory!</h2>
             <h3>+{result.expAward} exp</h3>
             <RPGUI.ProgressBar id={`battle-exp-bar`} progress={expProgress} color={'#3852ff'}/>
             <h3>Level {level}</h3>
+            {result.drops.length ? drops : false}
             <RPGUI.Button className="battle-btn" onClick={onContinue}>Continue</RPGUI.Button>
         </div>
     );

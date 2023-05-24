@@ -73,13 +73,28 @@ function RPGProgressBar_onTransitionEnd(id, callback) {
     fillBar.ontransitionend = callback;
 }
 
+function RPGAvatarCard({className, title, image, children, avatarChildren}) {
+    return (
+    <RPGCard className={`rpg-avater-card ${className}`}>
+        <div className='rpg-avater-card-group'>
+            <h3>{title}</h3>
+            <div className='rpg-avater-card-content'>
+                <div className="rpg-card-avatar-container">
+                    <img src={image}/>
+                    <div className='rpg-avatar-card-layer'>
+                        {avatarChildren}
+                    </div>
+                </div>
+                {children}
+            </div>
+        </div>
+    </RPGCard>
+    );
+}
+
 function RPGMonsterCard(props) {
     return (
-        <RPGCard className="rpg-monster-card">
-            <h3>{props.monsterName}</h3>
-            <div className="rpg-monster-avatar-container">
-                <img className="rpg-monster-avatar" src={props.monsterImage}/>
-            </div>
+        <RPGAvatarCard className="rpg-monster-card" title={props.monsterName} image={props.monsterImage}>
             <h5>Level {props.level}</h5>
             <h5>Attack</h5>
             <RPGProgressBar progress={props.attack}/>
@@ -88,14 +103,24 @@ function RPGMonsterCard(props) {
             <h5>Magic</h5>
             <RPGProgressBar progress={props.magic}/>
             <RPGButton className="rpg-monster-card-btn" onClick={props.onFightClick}>Fight!</RPGButton>
-        </RPGCard>
+        </RPGAvatarCard>
     );
 }
 
-function RPGMediaScroller(props) {
+function RPGMediaScroller({className, id, scrollx, scrolly, children}) {
+
+    const xScroll = scrollx ? 'scroll' : 'none';
+    const yScroll = scrolly ? 'scroll' : 'none';
+    const direction = scrollx ? 'row' : 'column';
+
+    const style = {
+        overflowX: xScroll,
+        overflowY: yScroll,
+        flexDirection: direction
+    };
     return (
-        <div className={"rpg-media-scroller " + props.className} id={props.id}>
-            {props.children}
+        <div style={style}className={"rpg-media-scroller " + className} id={id}>
+            {children}
         </div>
     );
 }
@@ -180,10 +205,19 @@ function RPGSprite_setProperties(id, properties) {
     sprite.setAttribute('src', spriteSheet)
 }
 
+function RPGButtonGroup(props) {
+    return (
+    <div id={props.id} className="rpg-btn-group-container rpg-btn-group-green">
+        {props.children}
+    </div>
+    );
+}
+
 const RPGUI = {
     Button: RPGButton,
     TextBox: RPGTextBox,
     Card: RPGCard,
+    AvatarCard: RPGAvatarCard,
     MonsterCard: RPGMonsterCard,
     ProgressBar: RPGProgressBar,
     ProgressBar_setProperties: RPGProgressBar_setProperties,
@@ -192,6 +226,7 @@ const RPGUI = {
     Sprite: RPGSprite,
     Sprite_play: RPGSprite_play,
     Sprite_onAnimationEnd: RPGSprite_onAnimationEnd,
+    ButtonGroup: RPGButtonGroup,
     RPGRed: "#ff4655",
     RPGBlue: "#3852ff",
     RPGGreen: "#2bff5d"

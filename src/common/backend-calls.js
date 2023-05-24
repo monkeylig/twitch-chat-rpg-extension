@@ -39,39 +39,60 @@ async function backendCall(endpoint, method='GET', payload = null) {
     return data;
 }
 
-const backend = {
-    getResourceURL(name) {
-        return resourceBackendURL + name;
-    },
+function getResourceURL(name) {
+    return resourceBackendURL + name;
+}
 
-    getStartingAvatars() {
-        return backendCall(endpoint_url('get_starting_avatars'));
-    },
+function getStartingAvatars() {
+    return backendCall(endpoint_url('get_starting_avatars'));
+}
 
-    createNewPlayer(name, playerId, avatar) {
-        return backendCall(endpoint_url('create_new_player', 'platform=twitch'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
-    },
+function createNewPlayer(name, playerId, avatar) {
+    return backendCall(endpoint_url('create_new_player', 'platform=twitch'), 'PUT', {name: name, playerId: playerId, avatar: avatar});
+}
 
-    getPlayer(playerId) {
+function getPlayer(playerId, platform) {
+    if (platform) {
         return backendCall(endpoint_url('get_player', 'platform=twitch', `playerId=${playerId}`));
-    },
-
-    joinGame(playerId, gameId) {
-        return backendCall(endpoint_url('join_game', `playerId=${playerId}`, `gameId=${gameId}`), 'POST');
-    },
-
-    getGame(gameId) {
-        return backendCall(endpoint_url('get_game', `gameId=${gameId}`));
-    },
-
-    startBattle(playerId, gameId, monsterId) {
-        return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST');
-    },
-
-    battleAction(battleId, actionType) {
-        return backendCall(endpoint_url('battle_action', `battleId=${battleId}`, `actionType=${actionType}`), 'POST');
     }
+    return backendCall(endpoint_url('get_player', `playerId=${playerId}`));
+}
 
+function joinGame(playerId, gameId) {
+    return backendCall(endpoint_url('join_game', `playerId=${playerId}`, `gameId=${gameId}`), 'POST');
+}
+
+function getGame(gameId) {
+    return backendCall(endpoint_url('get_game', `gameId=${gameId}`));
+}
+
+function startBattle(playerId, gameId, monsterId) {
+    return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST');
+}
+
+function battleAction(battleId, actionType) {
+    return backendCall(endpoint_url('battle_action', `battleId=${battleId}`, `actionType=${actionType}`), 'POST');
+}
+
+function equipWeapon(playerId, weaponId) {
+    return backendCall(endpoint_url('equip_weapon', `playerId=${playerId}`, `weaponId=${weaponId}`), 'POST');
+}
+
+function dropWeapon(playerId, weaponId) {
+    return backendCall(endpoint_url('drop_weapon', `playerId=${playerId}`, `weaponId=${weaponId}`), 'POST');
+}
+
+const backend = {
+    getResourceURL,
+    getStartingAvatars,
+    createNewPlayer,
+    getPlayer,
+    joinGame,
+    getGame,
+    startBattle,
+    battleAction,
+    equipWeapon,
+    dropWeapon
 };
 
 export default backend;

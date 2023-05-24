@@ -1,3 +1,4 @@
+
 .menu {
     position: relative;
     padding: 5px;
@@ -96,4 +97,117 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.radio_nav_input {
+    display: inline-block;
+    height: fit-content;
+    width: fit-content;
+}
+
+#player-bag-options {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+#player-bag-options > div{
+    display: flex;
+    align-items: center;
+    height: 10vh;
+}
+
+#player-bag-options .rpg-btn-group-item{
+    display: block;
+    flex-shrink: 1;
+    font-size: 4vw;
+    padding: 1vh 2vw;
+    border-width: 1vw;
+}
+
+#player-bag-options input:checked + .rpg-btn-group-item {
+    padding: 2vh 2vw;
+}
+
+.weapon-card img{
+    background: #7B7B7B;
+}
+
+.bag-manage-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bag-manage-options .rpg-btn {
+    padding: 0;
+    background: black;
+}
+
+.bag-card-btn {
+    padding: 2px;
+    width: 100%;
+}
+
+.bag-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.bag-card-content h5 {
+    align-self: center;
+}
+
+#bag-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+}
+
+.circle-btn {
+    padding: 0;
+    border: 2px;
+    border-style: solid;
+    border-radius: 50%;
+    border-color: #3852ff;
+    background: #3852ff;
+    aspect-ratio: 1 / 1;
+    user-select: none;
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.btn-red {
+    border-color: var(--rpg-red);
+    background: var(--rpg-red);
+}
+
+.btn-green {
+    border-color: var(--rpg-green);
+    background: var(--rpg-green);
+}
+
+.circle-btn:active {
+    background: darkblue;
+}
+
+.btn-red:active {
+    background: darkred;
+}
+
+.btn-green:active {
+    background: darkgreen;
+}
+
+#bag-confirm-weapon-drop div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#bag-confirm-weapon-drop div .rpg-btn {
+    font-size: 20px;
+    font-weight: 600;
+    width: 100px;
 }

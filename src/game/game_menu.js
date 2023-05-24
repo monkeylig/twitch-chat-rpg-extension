@@ -5,6 +5,7 @@ import backend from '../common/backend-calls';
 import frontend_context from '../common/frontend-context';
 import '../App.css';
 import './game_menu.css';
+import BagMenu from './bag';
 
 class GameMenu extends React.Component {
 
@@ -14,16 +15,17 @@ class GameMenu extends React.Component {
         this.onNavigate = this.onNavigate.bind(this);
         this.renderBattle = this.renderBattle.bind(this);
         this.onFightClick = this.onFightClick.bind(this);
+        this.renderMenu = this.renderMenu.bind(this);
 
         this.mounted = false;
         this.navData = [
             {
+                default: true,
                 id: "menu-btn1",
-                icon: "menu",
-                pageName: "menu"
+                icon: "backpack",
+                pageName: "Bag"
             },
             {
-                default: true,
                 id: "menu-btn2",
                 icon: "swords",
                 pageName: "battle"
@@ -37,12 +39,12 @@ class GameMenu extends React.Component {
 
         this.pageData = [
             {
+                default: true,
                 id: "page1",
                 htmlId: "menu-page",
                 onRenderPage: this.renderMenu
             },
             {
-                default: true,
                 id: "page2",
                 htmlId: "battle-page",
                 onRenderPage: this.renderBattle
@@ -68,7 +70,7 @@ class GameMenu extends React.Component {
     }
 
     renderMenu() {
-        return (<h1>Menu!</h1>);
+        return <BagMenu player={this.props.playerData}/>;
     }
 
     renderSettings() {
@@ -88,13 +90,12 @@ class GameMenu extends React.Component {
                 defence: monster.defenceRating,
                 magic: monster.magicRating
             };
-
             monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={index} onFightClick={() => this.onFightClick(monster.id)}/>);
             index++;
         }
 
         return (
-            <RPGUI.MediaScroller>
+            <RPGUI.MediaScroller scrollx>
                 {monsterCards}
             </RPGUI.MediaScroller>
             );
