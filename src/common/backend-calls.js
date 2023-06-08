@@ -29,7 +29,7 @@ async function backendCall(endpoint, method='GET', payload = null) {
     }
 
     fetchOptions.headers = headers;
-    const response = await fetch(backendURL + endpoint, fetchOptions);
+    const response = await fetch(encodeURI(backendURL + endpoint), fetchOptions);
     const data = await response.json();
 
     if(response.status != 200) {
@@ -82,6 +82,13 @@ function dropWeapon(playerId, weaponId) {
     return backendCall(endpoint_url('drop_weapon', `playerId=${playerId}`, `weaponId=${weaponId}`), 'POST');
 }
 
+function equipAbility(playerId, abilityBookName, abilityIndex, replacedAbilityName) {
+    if(replacedAbilityName) {
+        return backendCall(endpoint_url('equip_ability', `playerId=${playerId}`, `abilityBookName=${abilityBookName}`, `abilityIndex=${abilityIndex}`, `replacedAbilityName=${replacedAbilityName}`), 'POST');    
+    }
+    return backendCall(endpoint_url('equip_ability', `playerId=${playerId}`, `abilityBookName=${abilityBookName}`, `abilityIndex=${abilityIndex}`), 'POST');
+}
+
 const backend = {
     getResourceURL,
     getStartingAvatars,
@@ -92,7 +99,8 @@ const backend = {
     startBattle,
     battleAction,
     equipWeapon,
-    dropWeapon
+    dropWeapon,
+    equipAbility
 };
 
 export default backend;

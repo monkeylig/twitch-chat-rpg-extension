@@ -200,14 +200,24 @@
     background: darkgreen;
 }
 
-#bag-confirm-weapon-drop div {
+.bag-item {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    flex-direction: column;
+    height: 130px;
+    width: 130px;
+    border-radius: 5px;
 }
 
-#bag-confirm-weapon-drop div .rpg-btn {
-    font-size: 20px;
-    font-weight: 600;
-    width: 100px;
+.bag-item:active {
+    background: rgba(0, 0, 0, 0.212);
+}
+
+.bag-item img {
+    object-fit: contain;
+    min-width: 70px;
+    min-height: 70px;
+}
+
+.bag-item p {
+    text-align: center;
 }
