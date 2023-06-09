@@ -89,6 +89,14 @@ function equipAbility(playerId, abilityBookName, abilityIndex, replacedAbilityNa
     return backendCall(endpoint_url('equip_ability', `playerId=${playerId}`, `abilityBookName=${abilityBookName}`, `abilityIndex=${abilityIndex}`), 'POST');
 }
 
+function dropBook(playerId, abilityBookName) {
+    return backendCall(endpoint_url('drop_book', `playerId=${playerId}`, `abilityBookName=${abilityBookName}`), 'POST');
+}
+
+function dropItem(playerId, itemName) {
+    return backendCall(endpoint_url('drop_item', `playerId=${playerId}`, `itemName=${itemName}`), 'POST');
+}
+
 const backend = {
     getResourceURL,
     getStartingAvatars,
@@ -100,7 +108,9 @@ const backend = {
     battleAction,
     equipWeapon,
     dropWeapon,
-    equipAbility
+    equipAbility,
+    dropBook,
+    dropItem
 };
 
 export default backend;

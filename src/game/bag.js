@@ -55,9 +55,17 @@ function BagMenu({player}) {
             });
         }
         else if(bagGroup === 'items') {
-            backend.dropWeapon(player.id, bagItem.id)
+            backend.dropItem(player.id, bagItem.name)
             .then((newPlayer) => {
-                setPlayerWeapons(newPlayer.bag.weapons);
+                setPlayerItems(newPlayer.bag.items);
+            }).catch(error => {
+                console.log(error);
+            });
+        }
+        else if(bagGroup === 'books') {
+            backend.dropBook(player.id, bagItem.name)
+            .then((newPlayer) => {
+                setPlayerBooks(newPlayer.bag.books);
             }).catch(error => {
                 console.log(error);
             });
@@ -98,7 +106,8 @@ function BagMenu({player}) {
         currentBagList = playerItems;
         currentDialog = ItemDialog;
         currentDialogParams = {
-            item: selectedBagItem
+            item: selectedBagItem,
+            onDroppedClicked: ()=>clickDrop(selectedBagItem)
         };
     }
     else if(bagGroup === 'books') {
@@ -107,7 +116,8 @@ function BagMenu({player}) {
         currentDialogParams = {
             book: selectedBagItem,
             equippedAbilities: equippedAbilities,
-            onEquippedClicked: (index, replacedAbilityName)=>clickEquip(selectedBagItem, index, replacedAbilityName)
+            onEquippedClicked: (index, replacedAbilityName)=>clickEquip(selectedBagItem, index, replacedAbilityName),
+            onDroppedClicked: ()=>clickDrop(selectedBagItem)
         };
     }
 
@@ -148,6 +158,11 @@ function DialogControl({id, dialogFunction, dialogParams}) {
     const [currentDialogParams, setCurrentDialogParams] = useState(dialogParams);
     const dialogStack = useRef([]);
 
+    const reset = ()=>{
+        setTopDialog(() => dialogFunction);
+        setCurrentDialogParams(dialogParams);
+    };
+
     const exit = ()=>{
         const newDialog = dialogStack.current.pop();
         if(!newDialog) {
@@ -160,6 +175,12 @@ function DialogControl({id, dialogFunction, dialogParams}) {
         setCurrentDialogParams(newDialog.params);
     };
 
+    const exitAll = ()=>{
+        const dialog = document.getElementById(id);
+        dialog.close();
+    };
+
+
     const goToDialog = (nextDialog, nextDialogParams) => {
         dialogStack.current.push({dialog: TopDialog, params: currentDialogParams});
         setTopDialog(() => nextDialog);
@@ -168,15 +189,13 @@ function DialogControl({id, dialogFunction, dialogParams}) {
 
     const dialogControls = {
         exit,
+        exitAll,
         goToDialog
     };
 
     useEffect(()=>{
         const dialog = document.getElementById(id);
-        dialog.onclose = () => {
-            setTopDialog(() => dialogFunction);
-            setCurrentDialogParams(dialogParams);
-        };
+        dialog.onclose = reset;
         setTopDialog(() => dialogFunction);
         setCurrentDialogParams(dialogParams);
     }, [id, dialogFunction, dialogParams]);
@@ -252,6 +271,7 @@ function BookDialog({book, dialogControls, equippedAbilities, onEquippedClicked,
 }
 
 function ItemDialog({item, dialogControls, onDroppedClicked}) {
+
     const onDrop = (name) => {
         dialogControls.goToDialog(ConfirmDialog, {confirmMessage: `Are you sure you want to drop all ${name}s?`, onDroppedClicked});
     };
@@ -296,7 +316,7 @@ function WeaponDialog({weapon, equipped, onEquippedClicked, onDroppedClicked, di
 function ConfirmDialog({confirmMessage, onDroppedClicked, dialogControls}) {
     const onDrop = () => {
         onDroppedClicked();
-        dialogControls.exit();
+        dialogControls.exitAll();
     };
 
     return (
