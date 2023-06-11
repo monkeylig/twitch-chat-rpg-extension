@@ -70,8 +70,17 @@ function startBattle(playerId, gameId, monsterId) {
     return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST');
 }
 
-function battleAction(battleId, actionType) {
-    return backendCall(endpoint_url('battle_action', `battleId=${battleId}`, `actionType=${actionType}`), 'POST');
+function battleAction(battleId, actionRequest) {
+    const queryStrings = [`battleId=${battleId}`, `actionType=${actionRequest.actionType}`];
+    
+    if(actionRequest.hasOwnProperty('abilityName')) {
+        queryStrings.push(`abilityName=${actionRequest.abilityName}`);
+    }
+    else if(actionRequest.hasOwnProperty('itemName')) {
+        queryStrings.push(`itemName=${actionRequest.itemName}`);
+    }
+
+    return backendCall(endpoint_url('battle_action', ...queryStrings), 'POST');
 }
 
 function equipWeapon(playerId, weaponId) {

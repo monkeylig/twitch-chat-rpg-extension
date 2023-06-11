@@ -14,8 +14,6 @@ function BagMenu({player}) {
     const [selectedBagItem, setSelectedBagItem] = useState();
     const [bagGroup, setBagGroup] = useState('weapons');
 
-    let selectedWeaponId = useRef(0);
-
     const switchBagGroup = (groupName) => {
         setBagGroup(groupName);
         setSelectedBagItem();
@@ -251,12 +249,12 @@ function BookDialog({book, dialogControls, equippedAbilities, onEquippedClicked,
         dialogControls.goToDialog(ConfirmDialog, {confirmMessage: `Are you sure you want to drop ${name}?`, onDroppedClicked});
     };
 
-    const abilities = book.abilities.map((ability, index) => {
+    const abilities = book.abilities.map((abilityEntry, index) => {
         return (
             <div key={index}>
-                <h3>{ability.name}</h3>
-                <p>Damage: {ability.baseDamage}</p>
-                {equippedAbilities.find(ele => ele.name === ability.name) ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button rpgColor='blue' className='bag-card-btn' onClick={()=>onEquip(index)}>Equip</RPGUI.Button>}
+                <h3>{abilityEntry.ability.name}</h3>
+                <p>Damage: {abilityEntry.ability.baseDamage}</p>
+                {equippedAbilities.find(ele => ele.name === abilityEntry.ability.name) ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button rpgColor='blue' className='bag-card-btn' onClick={()=>onEquip(index)}>Equip</RPGUI.Button>}
             </div>
         );
     });

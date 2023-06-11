@@ -52,6 +52,11 @@ body {
   color: var(--rpg-yellow);
 }
 
+.rpg-btn p.yellow:hover {
+  color: #1b2028;
+}
+
+
 .rpg-btn p span.base {
   box-sizing: border-box;
   position: absolute;
@@ -429,6 +434,23 @@ dialog::-webkit-scrollbar {
   width: 5px;
 }
 dialog::-webkit-scrollbar-thumb {
+  background: #ff4656b6;
+  border-radius: 10px;
+  height: 5px;
+  width: 5px;
+}
+
+.scroller {
+  overflow-y: scroll;
+}
+
+.scroller::-webkit-scrollbar {
+  background: rgba(0, 0, 0, 0);
+  height: 5px;
+  width: 5px;
+}
+
+.scroller::-webkit-scrollbar-thumb {
   background: #ff4656b6;
   border-radius: 10px;
   height: 5px;
