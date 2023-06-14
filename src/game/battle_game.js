@@ -238,6 +238,7 @@ function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
         return (
             <div className='container'>
                 <h2>{result.endCondition === 'escape' ? 'Escaped!' : 'Defeat'}</h2>
+                {result.endCondition !== 'escape' ? <p>You will be restored to half of your maximum HP.</p> : <p>You have made it to safty.</p>}
                 <RPGUI.Button className="battle-btn" onClick={onContinue}>Continue</RPGUI.Button>
             </div>
         );
