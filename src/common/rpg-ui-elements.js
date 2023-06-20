@@ -10,17 +10,16 @@ function RPGButton(props)
             <button id={props.id} className={"rpg-btn " + props.className} >
                 <p onClick={props.onClick} className={colorClass}>
                     <span className={"bg " + colorClass}></span>
-                    <span className={"base " + colorClass}></span>
                     <span className="text">{props.children}</span>
                 </p>
             </button>);
 }
 
-function RPGTextBox(props) {
+function RPGTextBox({id, onInput, children, maxLength=''}) {
     return (
-        <div id={props.id} className="inp">
-            <input type="text" id="inp" placeholder="&nbsp;" onInput={props.onInput}/>
-            <span className="label">{props.children}</span>
+        <div id={id} className="inp">
+            <input type="text" id="inp" placeholder="&nbsp;" onInput={onInput} maxLength={maxLength}/>
+            <span className="label">{children}</span>
             <span className="focus-bg"></span>
         </div>
     );

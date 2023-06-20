@@ -20,12 +20,12 @@ class GameMenu extends React.Component {
         this.mounted = false;
         this.navData = [
             {
-                default: true,
                 id: "menu-btn1",
                 icon: "backpack",
                 pageName: "Bag"
             },
             {
+                default: true,
                 id: "menu-btn2",
                 icon: "swords",
                 pageName: "battle"
@@ -39,12 +39,12 @@ class GameMenu extends React.Component {
 
         this.pageData = [
             {
-                default: true,
                 id: "page1",
                 htmlId: "menu-page",
                 onRenderPage: this.renderMenu
             },
             {
+                default: true,
                 id: "page2",
                 htmlId: "battle-page",
                 onRenderPage: this.renderBattle
@@ -95,9 +95,9 @@ class GameMenu extends React.Component {
         }
 
         return (
-            <RPGUI.MediaScroller scrollx>
+            <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px'}}>
                 {monsterCards}
-            </RPGUI.MediaScroller>
+            </div>
             );
     }
     render() {

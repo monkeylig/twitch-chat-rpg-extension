@@ -8,22 +8,6 @@
   color: rgb(0, 0, 0);
 }
 
-
-#content-frame {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  padding: 2px;
-  box-sizing: border-box;
-}
-
-
-#intro-text {
-  position: relative;
-  margin: 0px;
-  top: 10%;
-}
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;

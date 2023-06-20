@@ -83,8 +83,8 @@ class SignUp extends React.Component {
             </label>
             );
             return (
-                <div id="content-frame">
-                    <h1 className='title'>Choose an Avatar!</h1>
+                <div id="content-frame" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <h1 className='welcome-title'>Choose an Avatar!</h1>
                     <div id="avatar-pick">
                         {avatarImgs}
                     </div>
@@ -96,11 +96,10 @@ class SignUp extends React.Component {
 
     renderNamePick(props) {
         return (
-            <div id="content-frame">
-                <h1 className='title'>Embark</h1>
-                <RPGUI.TextBox id="name-picker" onInput={this.onNameChanged}>Name</RPGUI.TextBox>
-                <RPGUI.Button className="responsive-btn long" id="begin-btn" onClick={this.onBeginAdventure}>Begin Adventure</RPGUI.Button>
-                <RPGUI.Button className="responsive-btn short" id="begin-btn" onClick={this.onBeginAdventure}>Begin</RPGUI.Button>
+            <div id="content-frame" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <h1 className='welcome-title'>Traveler Name</h1>
+                <RPGUI.TextBox id="name-picker" onInput={this.onNameChanged} maxLength='120'>Name</RPGUI.TextBox>
+                <RPGUI.Button className="responsive-btn short" id="begin-btn" onClick={this.onBeginAdventure}>Embark</RPGUI.Button>
             </div>
         );
     }

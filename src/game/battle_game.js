@@ -37,6 +37,10 @@ class BattleGame extends React.Component {
         this.runBattleIteration = this.runBattleIteration.bind(this);
     }
 
+    waitCommand(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     battleAnimationCommand(animProperties) {
         const sprite = document.querySelector(`#effect`);
         sprite.style['transform'] = `translateX(${animProperties.xPosition})`
@@ -67,7 +71,10 @@ class BattleGame extends React.Component {
     displayDialogCommand(dialog) {
         this.setState({ controls: 'type-writer', dialog: dialog});
         return new Promise((resolve, reject) => {
-            this.onDialogComplete = resolve;
+            this.onDialogComplete = async () => {
+                await this.waitCommand(500);
+                resolve();
+            };
         });
     }
 
@@ -214,7 +221,7 @@ class BattleGame extends React.Component {
             </div>
             <BattleControls controls={this.state.controls} text={this.state.dialog} abilities={this.player.abilities} items={this.state.items} onStrike={this.onStrike} onAbilityClicked={this.onAbilityClicked}
                 onItemClicked={this.onItemClicked} onDialogComplete={this.onDialogComplete} {...controlLables}/>
-            <div id="options-section">
+            <div id="options-section" style={{display: 'flex', justifyContent: 'space-between'}}>
                 <RPGUI.Button className="battle-btn" rpgColor="yellow" onClick={this.onEscapeClicked}>Escape</RPGUI.Button>
                 <RPGUI.Button className="battle-btn" rpgColor="yellow" onClick={this.onItemButtonClicked}>{this.state.controls === 'item' ? 'Cancel' : 'Items'}</RPGUI.Button>
             </div>

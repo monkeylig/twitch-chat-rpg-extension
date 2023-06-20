@@ -22,25 +22,13 @@
     color: #f1f3f3;
 }
 
-.battle_header::after {
-    content: "";
-    display: block;
-    top: -3px;
-    left: -3px;
-    bottom: -3px;
-    right: -3px;
-    z-index: -1;
-    position: absolute;
-    border-radius: 16px;
-}
-
 .battle_header h2 {
     font-weight: 500;
     font-size: 1em;
 }
 
 .battle_header p {
-    font-size: 0.5em;
+    font-size: 0.75em;
 }
 
 .battle_header p, .battle_header h2 {
@@ -51,20 +39,12 @@
     background-image: linear-gradient(215deg, #81252d, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
 }
 
-#right_header::after {
-    background-image: linear-gradient(215deg, #ff4655, #734a58 20%, #1b2028 30%, #2c333e 100%);
-}
-
 #left_header {
     background-image: linear-gradient(135deg, #2235af, rgba(115, 74, 88, 0.1) 15%, #1b2028 20%, #1b2028 100%);
 }
 
-#left_header::after {
-    background-image: linear-gradient(135deg, #3852ff, #391a72 30%, #1b2028 30%, #2c333e 100%);
-}
-
 .battle_header .rpg-bar {
-    height: 7px;
+    height: 10px;
     border: 1px solid rgba(255,255,255,1);
     border-radius: 5px;
 }
@@ -140,14 +120,16 @@
     background: white;
     border: 3px solid #616161;
     border-radius: 5px;
-    font-size: 9px;
-    letter-spacing: 0;
-    line-height: 1.2em;
+    font-size: 1em;
 }
 
 #battle-controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+
+#battle-controls .rpg-btn {
+    height: 100%;
 }
 
 #options-section {
@@ -167,10 +149,6 @@
     height: 100%;
 }
 
-.battle-btn::before,  .battle-btn::after{
-    display: none;
-  }
-
 #battle-effects {
     position: absolute;
     display: flex;
@@ -180,9 +158,7 @@
 }
 
 #battle-dialog {
-    width: calc(100% - 10px);
-    padding: 0;
-    border-radius: 5cqw;
+    border-radius: 10px;
 }
 
 #battle-dialog .container {
@@ -192,47 +168,40 @@
 }
 
 #battle-dialog .rpg-bar {
-    height: 5cqw;
+    height: 20px;
     border: 1px solid rgb(0, 0, 0);
     border-radius: 5px;
-    margin: 1cqw;
+    margin: 5px;
 }
 
 #battle-dialog .battle-btn {
-    height: 10cqw;
-    width: 120%;
+    height: auto;
+    width: auto;
 }
 
 #battle-dialog h2 {
-    font-size: 7cqw;
+    font-size: 3em;
 }
 
 #battle-dialog h3 {
-    font-size: 5cqw;
+    font-size: 1.5em;
 }
 
 #battle-dialog h2, #battle-dialog h3 {
-    font-weight: 100;
-    margin: 1cqw;
+    font-weight: 400;
+    margin: 5px;
 }
 
 .rpg-list {
     width: max-content;
 	max-width: 100%;
 	margin-inline: auto;
-
 	display: flex;
 	flex-direction: column;
 	gap: 0.25em;
-	font-size: clamp(1rem, 2vw, 2rem);
 	color: hsl(0, 0%, 90%);
-
+    padding-inline-start: 0px;
 	list-style: none;
-}
-
-.rpg-list, .rpg-list * {
-    margin: 0;
-    padding: 0;
 }
 
 .rpg-list > li {
@@ -267,116 +236,4 @@
     margin: 0;
     width: 40px;
     font-size: 7px;
-}
-
-@media(max-width: 200px) {
-    .battle-avatar img {
-        border-width: 1px;
-    }
-
-    .battle_header {
-        border-radius: 4px;
-        padding: 2px;
-        border-width: 1px;
-    }
-    
-    .battle_header::after {
-        border-radius: 4px;
-    }
-
-    .battle_header h2 {
-        display: none;
-    }
-    
-    .battle_header p {
-        display: none;
-    }
-    
-    .counter_bar p {
-        display: none;
-    }
-
-    .battle_header .rpg-bar {
-        height: 100%;
-        border-radius: 5px;
-    }
-
-    #ap_counter {
-        left: 10%;
-        width: 70%;
-        height: 7px;
-    }
-
-    .battle-btn {
-        font-size: 0.1em;
-    }
-}
-
-@media(200px < width <= 255px) {
-
-    .battle_header {
-        border-radius: 8px;
-    }
-    
-    .battle_header::after {
-        border-radius: 8px;
-    }
-
-    .battle_header h2 {
-        font-size: 0.45em;
-    }
-    
-    .battle_header p {
-        font-size: 0.4em;
-    }
-
-    .counter_bar p {
-        left: 2px;
-        bottom: -1px;
-    }
-
-    #ap_counter {
-        width: 70px;
-        height: 10px;
-        font-size: 0.7em;
-    }
-
-    .battle-btn {
-        font-size: 0.45em;
-    }
-    
-}
-
-@media(255px < width <= 400px) {
-
-    .battle_header {
-        border-radius: 8px;
-    }
-    
-    .battle_header::after {
-        border-radius: 8px;
-    }
-
-    .battle_header h2 {
-        font-size: 0.6em;
-    }
-    
-    .battle_header p {
-        font-size: 0.5em;
-    }
-
-    .counter_bar p {
-        left: 2px;
-        bottom: -1px;
-    }
-
-    #ap_counter {
-        width: 70px;
-        height: 10px;
-        font-size: 0.7em;
-    }
-
-    .battle-btn {
-        font-size: 0.6em;
-    }
 }

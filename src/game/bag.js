@@ -2,7 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import RPGUI from '../common/rpg-ui-elements';
 import backend from '../common/backend-calls';
 import { useState } from 'react';
-import { click } from '@testing-library/user-event/dist/click';
+
+const BAG_CAPACITY = 10;
 
 function BagMenu({player}) {
 
@@ -69,22 +70,6 @@ function BagMenu({player}) {
             });
         }
     }
-
-    const cancelDrop = () => {
-        const dialog = document.querySelector(`#bag-confirm-weapon-drop`);
-        dialog.close();
-    }
-
-    const confirmDrop = weaponId => {
-        backend.dropWeapon(player.id, weaponId)
-        .then((newPlayer) => {
-            setPlayerWeapons(newPlayer.bag.weapons);
-            const dialog = document.querySelector(`#bag-confirm-weapon-drop`);
-            dialog.close();
-        }).catch(error => {
-            console.log(error);
-        });
-    }
     
     let currentBagList;
     let currentDialog;
@@ -114,6 +99,7 @@ function BagMenu({player}) {
         currentDialogParams = {
             book: selectedBagItem,
             equippedAbilities: equippedAbilities,
+            playerTracker: player.trackers,
             onEquippedClicked: (index, replacedAbilityName)=>clickEquip(selectedBagItem, index, replacedAbilityName),
             onDroppedClicked: ()=>clickDrop(selectedBagItem)
         };
@@ -123,13 +109,19 @@ function BagMenu({player}) {
         currentDialog = null;
     }
 
-    const bagItems = currentBagList.map((bagItem, index) => {
+    const emptySlots = [];
+    let i=0;
+    while(currentBagList.length + emptySlots.length < BAG_CAPACITY) {
+        emptySlots.push(<div className='bag-item' key={bagGroup + i} style={{background: 'rgba(0, 0, 0, 0.212)'}}></div>);
+        i++;
+    }
 
+    const bagItems = currentBagList.map((bagItem, index) => {
         return <div className='bag-item' onClick={() => clickBagItem(bagItem)} key={bagItem.name + index}><img src={backend.getResourceURL(bagItem.icon)}/><p>{bagItem.name}</p></div>;
     });
 
     return (
-        <RPGUI.MediaScroller scrolly>
+        <div>
             <RPGUI.ButtonGroup id='player-bag-options'>
                 <div>
                     <input type='radio' name='bag-section-option' id='group-input-0' className='group-input' onChange={() => switchBagGroup('weapons')} defaultChecked/>
@@ -143,10 +135,11 @@ function BagMenu({player}) {
             
             <div id='bag-container'>
                 {bagItems}
+                {emptySlots}
             </div>
 
             <DialogControl id='bag-confirm-weapon-drop' dialogFunction={currentDialog} dialogParams={currentDialogParams}/>
-         </RPGUI.MediaScroller>
+        </div>
   );
 }
 
@@ -159,6 +152,7 @@ function DialogControl({id, dialogFunction, dialogParams}) {
     const reset = ()=>{
         setTopDialog(() => dialogFunction);
         setCurrentDialogParams(dialogParams);
+        dialogStack.current = [];
     };
 
     const exit = ()=>{
@@ -227,7 +221,7 @@ function AbilityReplacementDialog({equippedAbilities, dialogControls, onReplaceC
     );
 }
 
-function BookDialog({book, dialogControls, equippedAbilities, onEquippedClicked, onDroppedClicked}) {
+function BookDialog({book, dialogControls, equippedAbilities, playerTracker, onEquippedClicked, onDroppedClicked}) {
     if(!book) {
         return;
     }
@@ -250,11 +244,39 @@ function BookDialog({book, dialogControls, equippedAbilities, onEquippedClicked,
     };
 
     const abilities = book.abilities.map((abilityEntry, index) => {
+        let weaponRequirementType;
+        let weaponRequirement;
+        const killRequirements = abilityEntry.weaponKillRequirements; 
+        for(const weaponType in killRequirements) {
+            weaponRequirementType = weaponType;
+            weaponRequirement = killRequirements[weaponRequirementType];
+            break;
+        }
+
+        let requirementMet = false;
+        let equipButton = false;
+        let requirementString = `${weaponRequirement} ${weaponRequirementType}`;
+        let requirementStyle = {};
+
+        if(playerTracker) {
+            requirementMet = playerTracker.weaponKills[weaponRequirementType] >= weaponRequirement;
+            requirementString = `${playerTracker.weaponKills[weaponRequirementType]}/${weaponRequirement} ${weaponRequirementType}`;
+            requirementStyle = {
+                color: requirementMet ? 'green' : 'red'
+            };
+
+            if(requirementMet) {
+                equipButton = equippedAbilities.find(ele => ele.name === abilityEntry.ability.name) ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button rpgColor='blue' className='bag-card-btn' onClick={()=>onEquip(index)}>Equip</RPGUI.Button>;
+            }
+        }
+
         return (
             <div key={index}>
                 <h3>{abilityEntry.ability.name}</h3>
+                <p>Style: {abilityEntry.ability.style}</p>
+                <p>Requires: <span style={requirementStyle}>{requirementString}</span> kills to equip</p>
                 <p>Damage: {abilityEntry.ability.baseDamage}</p>
-                {equippedAbilities.find(ele => ele.name === abilityEntry.ability.name) ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button rpgColor='blue' className='bag-card-btn' onClick={()=>onEquip(index)}>Equip</RPGUI.Button>}
+                {equipButton}
             </div>
         );
     });
@@ -278,6 +300,7 @@ function ItemDialog({item, dialogControls, onDroppedClicked}) {
         <div>
             <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
             <h2>{item.name}</h2>
+            <p>X{item.count}</p>
             <p>{item.description}</p>
             <RPGUI.Button className='bag-card-btn' onClick={()=>onDrop(item.name)}>Drop</RPGUI.Button>
         </div>
@@ -298,6 +321,7 @@ function WeaponDialog({weapon, equipped, onEquippedClicked, onDroppedClicked, di
     <div>
         <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
         <h2>{weapon.name}</h2>
+        <p>{weapon.type} - {weapon.style}</p>
         <p>Damage: {weapon.baseDamage}</p>
         <p>Strike Ability: {weapon.strikeAbility.name}</p>
         <h3>Leveling</h3>

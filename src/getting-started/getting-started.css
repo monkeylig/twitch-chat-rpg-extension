@@ -6,32 +6,32 @@
 
 #play-btn {
     position: relative;
-    top: 15%;
-    width: 75%;
+    margin-top: 10px;
 }
 
 .responsive-btn {
-    height: 70px;
-    font-size: 1em;
+    font-size: 2em;
     font-weight: 900;
-    padding: 4px;
+    width: 200px;
 }
 
 #avatar-pick {
-    margin: auto;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 #intro-text {
-    line-height: 1.1em;
-    font-size: 1em;
+    font-size: 2em;
     text-align: center;
+    margin: 0;
 }
 
 .avatarImg {
+    display: block;
     position: relative;
-    width: 30vw;
-    height: 30vw;
+    width: 100px;
+    height: 100px;
     transition: transform 0.3s;
     z-index: 0;
 }
@@ -48,101 +48,21 @@
     z-index: 1;
 }
 
-.title {
+.welcome-title {
     text-align: center;
     font-size: 1.5em;
 }
 
 #name-picker {
     position: relative;
-    width: 100%;
     height: 40px;
     top: 0;
 }
 
 #begin-btn {
     position: relative;
-    top: 5%;
-    height: 20vh;
-}
-
-#begin-btn.short {
-    display: none;
 }
 
 .inputProxy {
     display: none;
-}
-
-@media(max-width: 150px) {
-    #name-picker input {
-        font-size: 1em;
-    }
-
-    #name-picker {
-        font-size: 0.5em;
-    }
-
-    #intro-text {
-        font-size: 0.35em;
-    }
-
-    .responsive-btn {
-        height: 25px;
-        font-size: 0.6em;
-        font-weight: 300;
-    }
-
-    .title {
-        font-size: 0.5em;
-    }
-    
-    #begin-btn.short {
-        display: inline-block;
-    }
-
-    #begin-btn.long {
-        display: none;
-    }
-}
-
-@media(150px < width <= 180px) {
-    #name-picker {
-        font-size: 0.6em;
-    }
-
-    #intro-text {
-        font-size: 0.5em;
-    }
-
-    .responsive-btn {
-        height: 40px;
-        font-size: 0.8em;
-        font-weight: 300;
-    }
-
-    .title {
-        font-size: 1em;
-    }
-}
-
-@media(180px < width <= 250px) {
-
-    #name-picker {
-        font-size: 0.8em;
-    }
-
-    #intro-text {
-        font-size: 0.8em;
-    }
-
-    .responsive-btn {
-        height: 60px;
-        font-size: 0.8em;
-        font-weight: 300;
-    }
-
-    .title {
-        font-size: 1em;
-    }
 }

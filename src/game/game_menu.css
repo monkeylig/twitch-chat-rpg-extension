@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background: linear-gradient(135deg, #ff4655, #3852ff);
+    background: linear-gradient(135deg, #ff4655 50%, #3852ff 50%);
     box-shadow: 0 2px 12px 0 rgba(91, 41, 191, 0.5);
     border-radius: 4px;
     user-select: none;
@@ -93,11 +93,11 @@
     flex-grow: 1;
 }
 
-#battle-page {
+/*#battle-page {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
+}*/
 
 .radio_nav_input {
     display: inline-block;
@@ -113,19 +113,14 @@
 #player-bag-options > div{
     display: flex;
     align-items: center;
-    height: 10vh;
+    height: 40px;
 }
 
 #player-bag-options .rpg-btn-group-item{
     display: block;
     flex-shrink: 1;
-    font-size: 4vw;
-    padding: 1vh 2vw;
-    border-width: 1vw;
-}
-
-#player-bag-options input:checked + .rpg-btn-group-item {
-    padding: 2vh 2vw;
+    font-size: 1em;
+    border-width: 2px;
 }
 
 .weapon-card img{
@@ -203,9 +198,12 @@
 .bag-item {
     display: flex;
     flex-direction: column;
-    height: 130px;
-    width: 130px;
+    height: 114px;
+    width: 114px;
+    padding-top: 10px;
     border-radius: 5px;
+    background: rgba(0, 0, 0, 0.1);
+    border: solid 1px black;
 }
 
 .bag-item:active {
@@ -214,10 +212,11 @@
 
 .bag-item img {
     object-fit: contain;
-    min-width: 70px;
-    min-height: 70px;
+    max-height: 75px;
 }
 
 .bag-item p {
     text-align: center;
+    font-size: 0.75em;
+    margin-block-start: 4px;
 }
