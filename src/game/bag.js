@@ -321,6 +321,7 @@ function WeaponDialog({weapon, equipped, onEquippedClicked, onDroppedClicked, di
     <div>
         <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
         <h2>{weapon.name}</h2>
+        <p>{weapon.description}</p>
         <p>{weapon.type} - {weapon.style}</p>
         <p>Damage: {weapon.baseDamage}</p>
         <p>Strike Ability: {weapon.strikeAbility.name}</p>

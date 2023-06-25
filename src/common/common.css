@@ -251,6 +251,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   height: 3px;
   width: 75%;
+  overflow: hidden;
 }
 
 .rpg-avater-card-group {

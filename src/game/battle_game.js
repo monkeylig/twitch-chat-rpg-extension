@@ -43,8 +43,11 @@ class BattleGame extends React.Component {
 
     battleAnimationCommand(animProperties) {
         const sprite = document.querySelector(`#effect`);
-        sprite.style['transform'] = `translateX(${animProperties.xPosition})`
-        RPGUI.Sprite_play("effect");
+        sprite.style['transform'] = `translateX(${animProperties.xPosition}) scaleX(${animProperties.xScale})`
+        RPGUI.Sprite_setProperties('effect', animProperties)
+        
+        // Give the DOM time to apply changes before playing
+        setTimeout(() => {RPGUI.Sprite_play("effect")}, 1);
 
         return new Promise((resolve, reject) => {
             RPGUI.Sprite_onAnimationEnd("effect", resolve);
@@ -78,8 +81,9 @@ class BattleGame extends React.Component {
         });
     }
 
-    getAnimProperties(step, isStrike) {
-        if (isStrike) {
+    getAnimProperties(step) {
+        
+        if(!step.animation) {
             return {
                 iterationCount: 1,
                 frameWidth: 1024,
@@ -90,7 +94,31 @@ class BattleGame extends React.Component {
                 xPosition: step.actorId == this.player.id ? '20%' : '-20%'
             };
         }
-        return {};
+
+        const animProperties = {
+            iterationCount: 1,
+            frameWidth: step.animation.frameWidth,
+            frameHeight: step.animation.frameHeight,
+            frameCount: step.animation.frameCount,
+            spriteSheet: backend.getResourceURL(step.animation.spriteSheet),
+            duration: step.animation.duration,
+        };
+
+        switch(step.positioning) {
+            case 'opponent':
+            default:
+                if(step.actorId == this.player.id) {
+                    animProperties.xPosition = '20%';
+                    animProperties.xScale = '1';
+                }
+                else {
+                    animProperties.xPosition = '-20%';
+                    animProperties.xScale = '-1'
+                }
+                break;
+        }
+
+        return animProperties;
     }
     
     async runBattleIteration(battleUpdate) {
@@ -101,11 +129,6 @@ class BattleGame extends React.Component {
 
         for(const step of battleUpdate.steps) {
             switch (step.type) {
-                case 'strike': {
-                    await this.displayDialogCommand(step.description);
-                    await this.battleAnimationCommand(this.getAnimProperties(step, true));
-                    break;
-                }
                 case 'battle_end':
                     await this.displayDialogCommand(step.description);
 
@@ -121,8 +144,8 @@ class BattleGame extends React.Component {
                     break;
                 case 'info':
                     await this.displayDialogCommand(step.description);
-                    if(step.action === 'strike') {
-                        await this.battleAnimationCommand(this.getAnimProperties(step, true));
+                    if(step.animation) {
+                        await this.battleAnimationCommand(this.getAnimProperties(step));
                     }
                     break;
                 case 'damage': {
@@ -133,6 +156,10 @@ class BattleGame extends React.Component {
                     break;
                 }
 
+            }
+
+            if(step.description && step.type !== 'info' && step.type !== 'battle_end') {
+                await this.displayDialogCommand(step.description);
             }
         }
 
@@ -205,7 +232,7 @@ class BattleGame extends React.Component {
 
     
         return (
-        <div id="content-frame" className="dark">
+        <div id="content-frame" className="dark" style={{overflow: 'hidden'}}>
             <div id="header-section">
                 <BattleHeader title={this.player.name} level={this.player.level} id="left_header" health={this.state.playerHealth/this.player.maxHealth}/>
                 <BattleHeader title={this.monster.name} level={this.monster.level} id="right_header" health={this.state.monsterHealth/this.monster.maxHealth}/>
@@ -283,7 +310,7 @@ function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
 }
 
 function BattleControls({controls, text, strikeText, abilities, items, onStrike, onAbilityClicked, onItemClicked, onDialogComplete}) {
-    let output = <p>Waiting</p>;
+    let output = <div id="battle-controls" className='control-box'><p>Waiting</p></div>;
 
     if(controls == 'battle') {
         const buttons = [<RPGUI.Button key='strike' className="battle-btn" rpgColor="blue" onClick={onStrike}>{strikeText}</RPGUI.Button>];
@@ -316,7 +343,7 @@ function BattleControls({controls, text, strikeText, abilities, items, onStrike,
     }
 
     else if(controls == 'error') {
-        output = <p>Sorry something went wrong</p>;
+        output = <div id="battle-controls"><p>Sorry something went wrong</p></div>;
     }
 
     return output;

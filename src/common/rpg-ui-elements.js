@@ -179,14 +179,8 @@ function RPGSprite_onAnimationEnd(id, callback) {
     sprite.onanimationend = callback;    
 }
 
-function RPGSprite_setProperties(id, properties) {
-    const autoplay = utility.getValue(properties.autoplay, false);
-    const frameWidth = utility.getValue(properties.frameWidth, 50);
-    const frameHeight = utility.getValue(properties.frameHeight, 50);
-    const frameCount = utility.getValue(properties.frameCount, 1);
-    const duration = utility.getValue(properties.duration, 1);
-    const iterationCount = utility.getValue(properties.iterationCount, "infinite");
-    const spriteSheet = utility.getValue(properties.spriteSheet, "");
+function RPGSprite_setProperties(id, {autoplay = false, frameWidth = 50, frameHeight = 50, frameCount = 1,
+    duration = 1, iterationCount = 'infinite', spriteSheet = ''}) {
 
     const container = document.getElementById(id);
     const sprite = container.querySelector(`img`);
@@ -225,6 +219,7 @@ const RPGUI = {
     Sprite: RPGSprite,
     Sprite_play: RPGSprite_play,
     Sprite_onAnimationEnd: RPGSprite_onAnimationEnd,
+    Sprite_setProperties: RPGSprite_setProperties,
     ButtonGroup: RPGButtonGroup,
     RPGRed: "#ff4655",
     RPGBlue: "#3852ff",
