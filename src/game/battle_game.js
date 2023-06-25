@@ -57,7 +57,7 @@ class BattleGame extends React.Component {
     healthChangeCommand(target, newHealth) {
         let headerId;
         
-        if(target == this.player) {
+        if(target.id === this.player.id) {
             this.setState({playerHealth: newHealth});
             headerId = 'left_header';
         }
@@ -69,6 +69,12 @@ class BattleGame extends React.Component {
         return new Promise((resolve, reject) => {
             BattleHeader_onTransitionEnd(headerId, (event) => { resolve(); });
         });
+    }
+
+    async syncHealthCommand(target, currentHealth) {
+        if(target.health !== currentHealth) {
+            await this.healthChangeCommand(target, target.health);
+        }
     }
 
     displayDialogCommand(dialog) {
@@ -148,11 +154,22 @@ class BattleGame extends React.Component {
                         await this.battleAnimationCommand(this.getAnimProperties(step));
                     }
                     break;
-                case 'damage': {
-                    const target = step.actorId == this.player.id ? this.monster : this.player;
-                    const newHealth = step.actorId == this.player.id ? battleUpdate.monster.health : battleUpdate.player.health;
+                case 'damage':{
+                    const target = step.targetId === this.player.id ? this.player : this.monster;
+                    const oldHealth = step.targetId === this.player.id ? this.state.playerHealth : this.state.monsterHealth;
 
-                    await this.healthChangeCommand(target, newHealth);
+                    if(step.damage > 0) {
+                        await this.healthChangeCommand(target, oldHealth - step.damage);
+                    }
+                    break;
+                }
+                case 'heal': {
+                    const target = step.targetId === this.player.id ? this.player : this.monster;
+                    const oldHealth = step.targetId === this.player.id ? this.state.playerHealth : this.state.monsterHealth;
+
+                    if(step.healAmount > 0) {
+                        await this.healthChangeCommand(target, oldHealth + step.healAmount);
+                    }
                     break;
                 }
 
@@ -163,6 +180,8 @@ class BattleGame extends React.Component {
             }
         }
 
+        await this.syncHealthCommand(battleUpdate.player, this.state.playerHealth);
+        await this.syncHealthCommand(battleUpdate.monster, this.state.monsterHealth);
         this.setState({ controls: 'battle' });
     }
 
