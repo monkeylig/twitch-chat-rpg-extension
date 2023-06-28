@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import RPGUI from '../common/rpg-ui-elements';
 import backend from '../common/backend-calls';
 import { useState } from 'react';
+import utility from '../common/utility';
 
 const BAG_CAPACITY = 10;
 
@@ -269,13 +270,12 @@ function BookDialog({book, dialogControls, equippedAbilities, playerTracker, onE
                 equipButton = equippedAbilities.find(ele => ele.name === abilityEntry.ability.name) ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button rpgColor='blue' className='bag-card-btn' onClick={()=>onEquip(index)}>Equip</RPGUI.Button>;
             }
         }
-
         return (
             <div key={index}>
                 <h3>{abilityEntry.ability.name}</h3>
                 <p>Style: {abilityEntry.ability.style}</p>
                 <p>Requires: <span style={requirementStyle}>{requirementString}</span> kills to equip</p>
-                <p>Damage: {abilityEntry.ability.baseDamage}</p>
+                <p>Damage: {utility.damageText(abilityEntry.ability.baseDamage)}</p>
                 {equipButton}
             </div>
         );

@@ -345,6 +345,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .rpg-sprite {
+  position: relative;
   overflow: hidden;
   z-index: 2;
 }

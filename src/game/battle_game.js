@@ -43,7 +43,8 @@ class BattleGame extends React.Component {
 
     battleAnimationCommand(animProperties) {
         const sprite = document.querySelector(`#effect`);
-        sprite.style['transform'] = `translateX(${animProperties.xPosition}) scaleX(${animProperties.xScale})`
+        sprite.style['transform'] = `scaleX(${animProperties.xScale})`;
+        sprite.style['left'] = animProperties.xPosition;
         RPGUI.Sprite_setProperties('effect', animProperties)
         
         // Give the DOM time to apply changes before playing
@@ -97,7 +98,7 @@ class BattleGame extends React.Component {
                 frameCount: 16,
                 spriteSheet: this.strikeAnim.spriteSheet,
                 duration: 0.5,
-                xPosition: step.actorId == this.player.id ? '20%' : '-20%'
+                xPosition: step.actorId == this.player.id ? '200%' : '-200%'
             };
         }
 
@@ -111,6 +112,15 @@ class BattleGame extends React.Component {
         };
 
         switch(step.positioning) {
+            case 'self':
+                animProperties.xScale = '1';
+                if(step.actorId == this.player.id) {
+                    animProperties.xPosition = '-20%';
+                }
+                else {
+                    animProperties.xPosition = '20%';
+                }
+                break;
             case 'opponent':
             default:
                 if(step.actorId == this.player.id) {
@@ -149,7 +159,9 @@ class BattleGame extends React.Component {
                     dialog.showModal();
                     break;
                 case 'info':
-                    await this.displayDialogCommand(step.description);
+                    if(step.description && step.description != '') {
+                        await this.displayDialogCommand(step.description);
+                    }
                     if(step.animation) {
                         await this.battleAnimationCommand(this.getAnimProperties(step));
                     }
