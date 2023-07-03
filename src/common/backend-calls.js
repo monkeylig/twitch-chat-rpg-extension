@@ -106,6 +106,14 @@ function dropItem(playerId, itemName) {
     return backendCall(endpoint_url('drop_item', `playerId=${playerId}`, `itemName=${itemName}`), 'POST');
 }
 
+function getShop() {
+    return backendCall(endpoint_url('get_shop', `shopId=daily`));
+}
+
+function buy(playerId, shopId, productId) {
+    return backendCall(endpoint_url('buy', `playerId=${playerId}`, `shopId=${shopId}`, `productId=${productId}`), 'POST');
+}
+
 const backend = {
     getResourceURL,
     getStartingAvatars,
@@ -119,7 +127,9 @@ const backend = {
     dropWeapon,
     equipAbility,
     dropBook,
-    dropItem
+    dropItem,
+    getShop,
+    buy
 };
 
 export default backend;

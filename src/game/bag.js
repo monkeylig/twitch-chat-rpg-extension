@@ -4,20 +4,13 @@ import backend from '../common/backend-calls';
 import { useState } from 'react';
 import utility from '../common/utility';
 
-const BAG_CAPACITY = 10;
-
-function BagMenu({player}) {
-
-    const [lastEquippedWeapon, setLastEquippedWeapon] = useState(player.weapon);
-    const [playerWeapons, setPlayerWeapons] = useState(player.bag.weapons);
-    const [equippedAbilities, setEquippedAbilities] = useState(player.abilities);
+function BagMenu({player, onPlayerChanged}) {
     const [playerBooks, setPlayerBooks] = useState(player.bag.books);
-    const [playerItems, setPlayerItems] = useState(player.bag.items);
     const [selectedBagItem, setSelectedBagItem] = useState();
     const [bagGroup, setBagGroup] = useState('weapons');
 
     const switchBagGroup = (groupName) => {
-        setBagGroup(groupName);
+        setBagGroup(groupName); 
         setSelectedBagItem();
     };
     
@@ -30,7 +23,7 @@ function BagMenu({player}) {
         if(bagGroup === 'weapons') {
             backend.equipWeapon(player.id, bagItem.id)
             .then((newPlayer) => {
-                setLastEquippedWeapon(bagItem);
+                onPlayerChanged(newPlayer);
             }).catch(error => {
                 console.log(error);
             });
@@ -38,7 +31,7 @@ function BagMenu({player}) {
         else if(bagGroup === 'books') {
             backend.equipAbility(player.id, bagItem.name, index, replacedName)
             .then((newPlayer) => {
-                setEquippedAbilities(newPlayer.abilities);
+                onPlayerChanged(newPlayer);
             }).catch(error => {
                 console.log(error);
             });
@@ -49,7 +42,7 @@ function BagMenu({player}) {
         if(bagGroup === 'weapons') {
             backend.dropWeapon(player.id, bagItem.id)
             .then((newPlayer) => {
-                setPlayerWeapons(newPlayer.bag.weapons);
+                onPlayerChanged(newPlayer);
             }).catch(error => {
                 console.log(error);
             });
@@ -57,7 +50,7 @@ function BagMenu({player}) {
         else if(bagGroup === 'items') {
             backend.dropItem(player.id, bagItem.name)
             .then((newPlayer) => {
-                setPlayerItems(newPlayer.bag.items);
+                onPlayerChanged(newPlayer);
             }).catch(error => {
                 console.log(error);
             });
@@ -77,17 +70,17 @@ function BagMenu({player}) {
     let currentDialogParams;
 
     if(bagGroup === 'weapons') {
-        currentBagList = playerWeapons;
+        currentBagList = player.bag.weapons;
         currentDialog = WeaponDialog;
         currentDialogParams = {
-            equipped: selectedBagItem && selectedBagItem.id === lastEquippedWeapon.id,
+            equipped: selectedBagItem && selectedBagItem.id === player.weapon.id,
             weapon: selectedBagItem,
             onEquippedClicked: ()=>clickEquip(selectedBagItem),
             onDroppedClicked: ()=>clickDrop(selectedBagItem)
         };
     }
     else if(bagGroup === 'items') {
-        currentBagList = playerItems;
+        currentBagList = player.bag.items;
         currentDialog = ItemDialog;
         currentDialogParams = {
             item: selectedBagItem,
@@ -99,7 +92,7 @@ function BagMenu({player}) {
         currentDialog = BookDialog;
         currentDialogParams = {
             book: selectedBagItem,
-            equippedAbilities: equippedAbilities,
+            equippedAbilities: player.abilities,
             playerTracker: player.trackers,
             onEquippedClicked: (index, replacedAbilityName)=>clickEquip(selectedBagItem, index, replacedAbilityName),
             onDroppedClicked: ()=>clickDrop(selectedBagItem)
@@ -112,13 +105,13 @@ function BagMenu({player}) {
 
     const emptySlots = [];
     let i=0;
-    while(currentBagList.length + emptySlots.length < BAG_CAPACITY) {
-        emptySlots.push(<div className='bag-item' key={bagGroup + i} style={{background: 'rgba(0, 0, 0, 0.212)'}}></div>);
+    while(currentBagList.length + emptySlots.length < player.bag.capacity) {
+        emptySlots.push(<RPGUI.ContainerItem key={bagGroup + i} style={{background: 'rgba(0, 0, 0, 0.212)'}}/>);
         i++;
     }
 
     const bagItems = currentBagList.map((bagItem, index) => {
-        return <div className='bag-item' onClick={() => clickBagItem(bagItem)} key={bagItem.name + index}><img src={backend.getResourceURL(bagItem.icon)}/><p>{bagItem.name}</p></div>;
+        return <RPGUI.ContainerItem onClick={() => clickBagItem(bagItem)} imageSrc={backend.getResourceURL(bagItem.icon)} name={bagItem.name} key={bagItem.name + index}/>;
     });
 
     return (
@@ -134,7 +127,7 @@ function BagMenu({player}) {
                 </div>
             </RPGUI.ButtonGroup>
             
-            <div id='bag-container'>
+            <div className='item-container'>
                 {bagItems}
                 {emptySlots}
             </div>

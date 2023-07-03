@@ -6,16 +6,25 @@ import frontend_context from '../common/frontend-context';
 import '../App.css';
 import './game_menu.css';
 import BagMenu from './bag';
+import ShopMenu from './shop';
+import ProfileViewer from './profile';
 
 class GameMenu extends React.Component {
 
     constructor(props) {
         super(props);
 
+        this.state = {
+            player: this.props.playerData
+        }
+
         this.onNavigate = this.onNavigate.bind(this);
+        this.onPlayerChanged = this.onPlayerChanged.bind(this);
         this.renderBattle = this.renderBattle.bind(this);
         this.onFightClick = this.onFightClick.bind(this);
-        this.renderMenu = this.renderMenu.bind(this);
+        this.renderBagMenu = this.renderBagMenu.bind(this);
+        this.renderShop = this.renderShop.bind(this);
+        this.renderProfile = this.renderProfile.bind(this);
 
         this.mounted = false;
         this.navData = [
@@ -25,15 +34,20 @@ class GameMenu extends React.Component {
                 pageName: "Bag"
             },
             {
-                default: true,
                 id: "menu-btn2",
                 icon: "swords",
                 pageName: "battle"
             },
             {
                 id: "menu-btn3",
-                icon: "settings",
-                pageName: "settings"
+                icon: "store",
+                pageName: "shop"
+            },
+            {
+                default: true,
+                id: "menu-btn4",
+                icon: "account_box",
+                pageName: "profile"
             }
         ]
 
@@ -41,20 +55,29 @@ class GameMenu extends React.Component {
             {
                 id: "page1",
                 htmlId: "menu-page",
-                onRenderPage: this.renderMenu
+                onRenderPage: this.renderBagMenu
             },
             {
-                default: true,
                 id: "page2",
                 htmlId: "battle-page",
                 onRenderPage: this.renderBattle
             },
             {
                 id: "page3",
-                htmlId: "settings-page",
-                onRenderPage: this.renderSettings
+                htmlId: "shop-page",
+                onRenderPage: this.renderShop
+            },
+            {
+                default: true,
+                id: "page4",
+                htmlId: "profile-page",
+                onRenderPage: this.renderProfile
             }
         ]
+    }
+
+    onPlayerChanged(playerData) {
+        this.setState({player: playerData});
     }
 
     onFightClick(monsterId) {
@@ -69,12 +92,16 @@ class GameMenu extends React.Component {
         document.getElementById("page" + navNumber).checked = true;
     }
 
-    renderMenu() {
-        return <BagMenu player={this.props.playerData}/>;
+    renderBagMenu() {
+        return <BagMenu player={this.state.player} onPlayerChanged={this.onPlayerChanged}/>;
     }
 
-    renderSettings() {
-        return (<h1>Settings!</h1>);
+    renderProfile() {
+        return <ProfileViewer player={this.state.player}/>;
+    }
+
+    renderShop() {
+        return <ShopMenu player={this.state.player} onPlayerChanged={this.onPlayerChanged}/>;
     }
 
     renderBattle() {

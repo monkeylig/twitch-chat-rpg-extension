@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './common.css'
 import utility from './utility';
 
@@ -7,7 +7,7 @@ function RPGButton(props)
     let colorClass = props.rpgColor ? props.rpgColor : "";
 
     return (
-            <button id={props.id} className={"rpg-btn " + props.className} >
+            <button id={props.id} className={"rpg-btn custom-button " + props.className} >
                 <p onClick={props.onClick} className={colorClass}>
                     <span className={"bg " + colorClass}></span>
                     <span className="text">{props.children}</span>
@@ -33,20 +33,17 @@ function RPGCard(props) {
     );
 }
 
-function RPGProgressBar(props) {
-    let progress = props.progress;
-    if(!progress) {
-        progress = 0;
-    }
+function RPGProgressBar({progress=0, color, className, id}) {
+    
     let filledStyle = {flexGrow: progress};
     let emptyStyle = {flexGrow: 1-progress};
 
-    if(props.color) {
-        filledStyle["background"] = props.color;
+    if(color) {
+        filledStyle["background"] = color;
     }
 
     return (
-        <div id={props.id} className={"rpg-bar " + props.className}>
+        <div id={id} className={"rpg-bar " + className}>
             <div style={filledStyle} className="rpg-filledbar"></div>
             <div style={emptyStyle} className="rpg-emptybar"></div>
         </div>
@@ -206,6 +203,175 @@ function RPGButtonGroup(props) {
     );
 }
 
+function RPGContainerItem({onClick, imageSrc, name, style, price, coinImageSrc}) {
+    return (
+        <div onClick={onClick} style={style}>
+            <img src={imageSrc}/>
+            <p>{name}</p>
+            {price && <p><img style={{width: '20px', position: 'relative', top: '5px'}} src={coinImageSrc}/>{` ${price}`}</p>}
+        </div>
+    );
+}
+
+function RPGAbilityView({ability}) {
+    return (
+        <>
+            <h3>{ability.name}</h3>
+            <p>{ability.description}</p>
+            <p>{ability.type} - {ability.style}</p>
+            <p>Damage: {utility.damageText(ability.baseDamage)}</p>
+
+        </>
+    );
+}
+
+function RPGDialogControl({id, dialogFunction, dialogParams}) {
+
+    const [TopDialog, setTopDialog] = useState();
+    const [currentDialogParams, setCurrentDialogParams] = useState();
+    const dialogStack = useRef([]);
+    
+    const reset = ()=>{
+        setTopDialog(() => dialogFunction);
+        setCurrentDialogParams(dialogParams);
+        dialogStack.current = [];
+    };
+
+    const exit = ()=>{
+        const newDialog = dialogStack.current.pop();
+        if(!newDialog) {
+            const dialog = document.getElementById(id);
+            dialog.close();
+            return;
+        }
+
+        setTopDialog(() => newDialog.dialog);
+        setCurrentDialogParams(newDialog.params);
+    };
+
+    const exitAll = ()=>{
+        const dialog = document.getElementById(id);
+        dialog.close();
+    };
+
+
+    const goToDialog = (nextDialog, nextDialogParams) => {
+        dialogStack.current.push({dialog: TopDialog, params: currentDialogParams});
+        setTopDialog(() => nextDialog);
+        setCurrentDialogParams(nextDialogParams);
+    };
+
+    const dialogControls = {
+        exit,
+        exitAll,
+        goToDialog
+    };
+
+    useEffect(()=>{
+        const dialog = document.getElementById(id);
+        dialog.onclose = () => reset();
+        setTopDialog(() => dialogFunction);
+        setCurrentDialogParams(dialogParams);
+    }, [id, dialogFunction, dialogParams]);
+    
+    return (
+        <dialog id={id}>{TopDialog !=null ? React.createElement(TopDialog, {...currentDialogParams, dialogControls}) : <></>}</dialog>
+    );
+}
+
+function RPGWeaponDialog({weapon, equipped=false, owned=false, price, canAfford=false, onEquippedClicked, onDroppedClicked, onBuyClicked, dialogControls}) {
+    if(!weapon) {
+        return;
+    }
+
+    const onDrop = (name) => {
+        dialogControls.goToDialog(RPGConfirmDropDialog, {confirmMessage: `Are you sure you want to drop ${name}?`, onDroppedClicked});
+    };
+
+    const equipButton = equipped ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button onClick={onEquippedClicked} rpgColor='blue' className='bag-card-btn'>Equip</RPGUI.Button>;
+    const buyButton = (
+        <>
+            {owned && <p style={{color: 'green'}}>Owned</p>}
+            {!canAfford && <p style={{color: 'red'}}>You don't have enough coins for this item - {price} Coin</p>}
+            {(!owned && canAfford) && <RPGUI.Button onClick={onBuyClicked} rpgColor='blue' className='bag-card-btn'>Buy for {price} Coin</RPGUI.Button>}
+        </>);
+
+    return (
+    <div>
+        <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
+        <h2>{weapon.name}</h2>
+        <p>{weapon.description}</p>
+        <p>{weapon.type} - {weapon.style}</p>
+        <p>Damage: {weapon.baseDamage}</p>
+        <p>Strike Ability: {weapon.strikeAbility.name}</p>
+        <h3>Leveling</h3>
+        <p>Health: +{weapon.statGrowth.maxHealth}</p>
+        <p>Attack: +{weapon.statGrowth.attack}</p>
+        <p>Magic: +{weapon.statGrowth.magic}</p>
+        <p>Defence: +{weapon.statGrowth.defence}</p>
+        {onEquippedClicked && equipButton}
+        {onDroppedClicked && <RPGUI.Button onClick={()=>onDrop(weapon.name)} className='bag-card-btn'>Drop</RPGUI.Button>}
+        {onBuyClicked && buyButton}
+    </div>
+    );
+}
+
+function RPGItemDialog({item, price, canAfford=false, amountOwned=0, onBuyClicked, onDroppedClicked, dialogControls}) {
+
+    if(!item) {
+        return;
+    }
+
+    const onDrop = (name) => {
+        dialogControls.goToDialog(RPGConfirmDropDialog, {confirmMessage: `Are you sure you want to drop all ${name}s?`, onDroppedClicked});
+    };
+    
+    const buyButton = (
+        <>
+            {!canAfford && <p style={{color: 'red'}}>You don't have enough coins for this item - {price} Coin</p>}
+            {canAfford && <RPGUI.Button onClick={onBuyClicked} rpgColor='blue' className='bag-card-btn'>Buy for {price} Coin</RPGUI.Button>}
+        </>);
+
+    return (
+        <div>
+            <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
+            <h2>{item.name} <span style={{fontWeight:'400'}}>x{item.count}</span></h2>
+            <p>{item.description}</p>
+            {amountOwned > 0 && <p>You own {amountOwned} {item.name}{amountOwned > 1 ? 's' : ''}.</p>}
+            {onDroppedClicked && <RPGUI.Button className='bag-card-btn' onClick={()=>onDrop(item.name)}>Drop</RPGUI.Button>}
+            {onBuyClicked && buyButton}
+        </div>
+    );
+}
+
+function RPGAbilityDialog({ability, dialogControls}) {
+    if(!ability) {
+        return;
+    }
+
+    return (
+        <div>
+            <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
+            <RPGUI.AbilityView ability={ability}/>
+        </div>
+    );
+}
+
+function RPGConfirmDropDialog({confirmMessage, onDroppedClicked, dialogControls}) {
+    const onDrop = () => {
+        onDroppedClicked();
+        dialogControls.exitAll();
+    };
+
+    return (
+        <div>
+            <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
+            <p>{confirmMessage}</p>
+            <RPGUI.Button onClick={()=>onDrop()} className='bag-card-btn'>Drop</RPGUI.Button>
+        </div>
+    );
+}
+
 const RPGUI = {
     Button: RPGButton,
     TextBox: RPGTextBox,
@@ -221,6 +387,12 @@ const RPGUI = {
     Sprite_onAnimationEnd: RPGSprite_onAnimationEnd,
     Sprite_setProperties: RPGSprite_setProperties,
     ButtonGroup: RPGButtonGroup,
+    ContainerItem: RPGContainerItem,
+    WeaponDialog: RPGWeaponDialog,
+    ItemDialog: RPGItemDialog,
+    DialogControl: RPGDialogControl,
+    AbilityView: RPGAbilityView,
+    AbilityDialog: RPGAbilityDialog,
     RPGRed: "#ff4655",
     RPGBlue: "#3852ff",
     RPGGreen: "#2bff5d"

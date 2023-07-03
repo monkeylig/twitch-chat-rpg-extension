@@ -152,7 +152,7 @@
     align-self: center;
 }
 
-#bag-container {
+.item-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -195,10 +195,10 @@
     background: darkgreen;
 }
 
-.bag-item {
+.item-container > div {
     display: flex;
     flex-direction: column;
-    height: 114px;
+    min-height: 114px;
     width: 114px;
     padding-top: 10px;
     border-radius: 5px;
@@ -206,17 +206,73 @@
     border: solid 1px black;
 }
 
-.bag-item:active {
+.item-container > div:active {
     background: rgba(0, 0, 0, 0.212);
 }
 
-.bag-item img {
+.item-container > div img {
     object-fit: contain;
-    max-height: 75px;
+    max-height: 71px;
 }
 
-.bag-item p {
+.item-container > div p {
     text-align: center;
     font-size: 0.75em;
     margin-block-start: 4px;
+}
+
+#prifile-viewer {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+}
+
+#profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#profile-header-avatar {
+    border-radius: 10px;
+    width: 50vw;
+    min-width: 100px;
+    max-width: 500px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+#profile-header-info {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+
+#profile-header-health-bar {
+    height: 10px;
+    max-width: 300px;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+#profile-header-exp-bar {
+    height: 10px;
+    max-width: 300px;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.profile-icon {
+    image-rendering: pixelated;
+    cursor: pointer;
+    border-radius: 10px;
+    width: 20vw;
+    min-width: 75px;
+    max-width: 400px;
+}
+
+img:active.profile-icon {
+    background: rgb(0, 0, 0, .2);
 }
