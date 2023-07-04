@@ -11,7 +11,7 @@ function endpoint_url(name, ...queryStrings) {
     return '/' + name + queryString;
 }
 
-async function backendCall(endpoint, method='GET', payload = null) {
+async function backendCall(endpoint, method='GET', payload) {
     const headers = {}
     let body = '';
 
@@ -66,8 +66,8 @@ function getGame(gameId) {
     return backendCall(endpoint_url('get_game', `gameId=${gameId}`));
 }
 
-function startBattle(playerId, gameId, monsterId) {
-    return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST');
+function startBattle(playerId, gameId, monsterId, fallbackMonster) {
+    return backendCall(endpoint_url('start_battle', `playerId=${playerId}`, `gameId=${gameId}`, `monsterId=${monsterId}`), 'POST', {fallbackMonster});
 }
 
 function battleAction(battleId, actionRequest) {

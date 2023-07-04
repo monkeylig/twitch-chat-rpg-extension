@@ -22,6 +22,7 @@ class BattleGame extends React.Component {
             dialog: '',
             playerHealth: this.player.health,
             monsterHealth: this.monster.health,
+            playerAp: 3,
             strikeLevel: this.player.strikeLevel,
             items: this.player.bag.items,
             oldLevel: this.player.level,
@@ -111,7 +112,7 @@ class BattleGame extends React.Component {
             duration: step.animation.duration,
         };
 
-        switch(step.positioning) {
+        switch(step.animation.positioning) {
             case 'self':
                 animProperties.xScale = '1';
                 if(step.actorId == this.player.id) {
@@ -146,6 +147,7 @@ class BattleGame extends React.Component {
         for(const step of battleUpdate.steps) {
             switch (step.type) {
                 case 'battle_end':
+                    await this.waitCommand(1000);
                     await this.displayDialogCommand(step.description);
 
                     this.setState({
@@ -162,6 +164,7 @@ class BattleGame extends React.Component {
                     if(step.description && step.description != '') {
                         await this.displayDialogCommand(step.description);
                     }
+
                     if(step.animation) {
                         await this.battleAnimationCommand(this.getAnimProperties(step));
                     }
@@ -175,6 +178,8 @@ class BattleGame extends React.Component {
                     }
                     break;
                 }
+                case 'revive':
+                    await this.waitCommand(1000);
                 case 'heal': {
                     const target = step.targetId === this.player.id ? this.player : this.monster;
                     const oldHealth = step.targetId === this.player.id ? this.state.playerHealth : this.state.monsterHealth;
@@ -191,6 +196,8 @@ class BattleGame extends React.Component {
                 await this.displayDialogCommand(step.description);
             }
         }
+
+        this.setState({playerAp: battleUpdate.player.ap});
 
         await this.syncHealthCommand(battleUpdate.player, this.state.playerHealth);
         await this.syncHealthCommand(battleUpdate.monster, this.state.monsterHealth);
@@ -211,7 +218,16 @@ class BattleGame extends React.Component {
         backend.battleAction(this.battleId, {actionType: 'ability', abilityName: name})
         .then(this.runBattleIteration)
         .catch(error => {
-            this.setState({ controls: 'error' });
+            if(error.errorCode === 16) {
+                this.displayDialogCommand(`${this.player.name} does not have enough AP to use this ability.`)
+                .then(() => {
+                    this.setState({ controls: 'battle' });
+                })
+                .catch(() => {this.setState({ controls: 'error' })});
+            }
+            else {
+                this.setState({ controls: 'error' });
+            }
         });
     }
 
@@ -273,7 +289,7 @@ class BattleGame extends React.Component {
                     <RPGUI.Sprite id="effect" iterationCount={1} frameWidth={1024} frameHeight={1024} frameCount={16} spriteSheet={this.strikeAnim.spriteSheet} duration={0.5}/>
                 </div>
                 <BattleAvatar image={backend.getResourceURL(this.player.avatar)} id="right-avatar">
-                    <CounterBar id="ap_counter" title="AP" maxCount={3} currentCount={this.player.ap}/>
+                    <CounterBar id="ap_counter" title="AP" maxCount={3} currentCount={this.state.playerAp}/>
                 </BattleAvatar>
                 <BattleAvatar image={backend.getResourceURL(this.monster.avatar)} id="left-avatar"/>
             </div>
@@ -357,7 +373,7 @@ function BattleControls({controls, text, strikeText, abilities, items, onStrike,
     else if(controls == 'item') {
 
         const buttons = items ? items.map((item) => {
-            return <RPGUI.Button key={item.name} rpgColor="yellow" className="battle-btn" onClick={()=>onItemClicked ? onItemClicked(item.name) : false}>{item.name}</RPGUI.Button>
+            return <RPGUI.Button key={item.name} rpgColor="yellow" className="battle-btn" onClick={()=>onItemClicked ? onItemClicked(item.name) : false}>{item.name} x{item.count}</RPGUI.Button>
         }) : false;
         output = (
             <div id="battle-controls" className='control-box scroller'>

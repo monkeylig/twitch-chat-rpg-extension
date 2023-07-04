@@ -80,8 +80,8 @@ class GameMenu extends React.Component {
         this.setState({player: playerData});
     }
 
-    onFightClick(monsterId) {
-        backend.startBattle(this.props.playerData.id, this.props.gameState.id, monsterId)
+    onFightClick(monsterId, fallbackMonster) {
+        backend.startBattle(this.props.playerData.id, this.props.gameState.id, monsterId, fallbackMonster)
         .then(battleState => {
             this.props.onNavigate('battle', battleState);
         });
@@ -117,7 +117,7 @@ class GameMenu extends React.Component {
                 defence: monster.defenceRating,
                 magic: monster.magicRating
             };
-            monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={index} onFightClick={() => this.onFightClick(monster.id)}/>);
+            monsterCards.push(<RPGUI.MonsterCard {...monsterData} key={index} onFightClick={() => this.onFightClick(monster.id, {monsterClass: monster.class, level: monster.level})}/>);
             index++;
         }
 
