@@ -34,6 +34,7 @@ class GameMenu extends React.Component {
                 pageName: "Bag"
             },
             {
+                default: true,
                 id: "menu-btn2",
                 icon: "swords",
                 pageName: "battle"
@@ -44,7 +45,6 @@ class GameMenu extends React.Component {
                 pageName: "shop"
             },
             {
-                default: true,
                 id: "menu-btn4",
                 icon: "account_box",
                 pageName: "profile"
@@ -58,6 +58,7 @@ class GameMenu extends React.Component {
                 onRenderPage: this.renderBagMenu
             },
             {
+                default: true,
                 id: "page2",
                 htmlId: "battle-page",
                 onRenderPage: this.renderBattle
@@ -68,7 +69,6 @@ class GameMenu extends React.Component {
                 onRenderPage: this.renderShop
             },
             {
-                default: true,
                 id: "page4",
                 htmlId: "profile-page",
                 onRenderPage: this.renderProfile
