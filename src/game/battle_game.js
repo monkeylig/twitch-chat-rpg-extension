@@ -7,6 +7,26 @@ import backend from '../common/backend-calls';
 
 import './battle_game.css';
 
+function preloadImages(array, preloadImages) {
+    if (!preloadImages.list) {
+        preloadImages.list = [];
+    }
+    var list = preloadImages.list;
+    for (var i = 0; i < array.length; i++) {
+        var img = new Image();
+        img.onload = function() {
+            var index = list.indexOf(this);
+            if (index !== -1) {
+                // remove image from the array once it's loaded
+                // for memory consumption reasons
+                list.splice(index, 1);
+            }
+        }
+        list.push(img);
+        img.src = array[i];
+    }
+}
+
 class BattleGame extends React.Component {
     constructor(props) {
         super(props);
@@ -16,6 +36,19 @@ class BattleGame extends React.Component {
         this.monster = props.monster;
         this.strikeAnim = Object.assign({}, props.strikeAnim);
         this.strikeAnim.spriteSheet = backend.getResourceURL(props.strikeAnim.spriteSheet);
+        this.preloadImages = {};
+
+        const assets = [this.strikeAnim.spriteSheet];
+
+        for(const ability of this.player.abilities) {
+            assets.push(backend.getResourceURL(ability.animation.spriteSheet));
+        }
+
+        for(const ability of this.monster.abilities) {
+            assets.push(backend.getResourceURL(ability.animation.spriteSheet));
+        }
+
+        preloadImages(assets, preloadImages);
 
         this.state = {
             controls: 'battle',
@@ -102,7 +135,6 @@ class BattleGame extends React.Component {
                 xPosition: step.actorId == this.player.id ? '200%' : '-200%'
             };
         }
-
         const animProperties = {
             iterationCount: 1,
             frameWidth: step.animation.frameWidth,
@@ -110,6 +142,7 @@ class BattleGame extends React.Component {
             frameCount: step.animation.frameCount,
             spriteSheet: backend.getResourceURL(step.animation.spriteSheet),
             duration: step.animation.duration,
+            imageRendering: step.animation.imageRendering ? step.animation.imageRendering : 'auto'
         };
 
         switch(step.animation.positioning) {
@@ -144,10 +177,13 @@ class BattleGame extends React.Component {
             items: battleUpdate.player.bag.items
         });
 
+        let gameOver = false;
         for(const step of battleUpdate.steps) {
             switch (step.type) {
                 case 'battle_end':
-                    await this.waitCommand(1000);
+                    if(battleUpdate.result.endCondition !== 'escape') {
+                        await this.waitCommand(1000);
+                    }
                     await this.displayDialogCommand(step.description);
 
                     this.setState({
@@ -155,7 +191,7 @@ class BattleGame extends React.Component {
                         oldLevel: this.player.level,
                         newLevel: battleUpdate.player.level
                     });
-
+                    gameOver = true;
                     this.player = battleUpdate.player;
                     const dialog = document.querySelector(`dialog`);
                     dialog.showModal();
@@ -201,16 +237,17 @@ class BattleGame extends React.Component {
 
         await this.syncHealthCommand(battleUpdate.player, this.state.playerHealth);
         await this.syncHealthCommand(battleUpdate.monster, this.state.monsterHealth);
-        this.setState({ controls: 'battle' });
+
+        if(gameOver) {
+            this.setState({ controls: 'end' });
+        }
+        else {
+            this.setState({ controls: 'battle' });
+        }
     }
 
     onStrike() {
-        this.setState({ controls: 'waiting' });
-        backend.battleAction(this.battleId, {actionType: 'strike'})
-        .then(this.runBattleIteration)
-        .catch(error => {
-            this.setState({ controls: 'error' });
-        });
+        this.#commitBattleAction({actionType: 'strike'});
     }
 
     onAbilityClicked(name) {
@@ -232,16 +269,11 @@ class BattleGame extends React.Component {
     }
 
     onEscapeClicked() {
-        this.setState({ controls: 'waiting' });
-        backend.battleAction(this.battleId, {actionType: 'escape'})
-        .then(this.runBattleIteration)
-        .catch(error => {
-            this.setState({ controls: 'error' });
-        });
+        this.#commitBattleAction({actionType: 'escape'});
     }
 
     onItemClicked(name) {
-        this.#commitBattleAction({actionType: 'item', itemName: name})
+        this.#commitBattleAction({actionType: 'item', itemName: name});
     }
 
     onItemButtonClicked() {
@@ -254,6 +286,9 @@ class BattleGame extends React.Component {
     }
 
     #commitBattleAction(battleRequest) {
+        if(this.state.controls === 'waiting') {
+            return;
+        }
         this.setState({ controls: 'waiting' });
         backend.battleAction(this.battleId, battleRequest)
         .then(this.runBattleIteration)
@@ -294,11 +329,13 @@ class BattleGame extends React.Component {
                 <BattleAvatar image={backend.getResourceURL(this.monster.avatar)} id="left-avatar"/>
             </div>
             <BattleControls controls={this.state.controls} text={this.state.dialog} abilities={this.player.abilities} items={this.state.items} onStrike={this.onStrike} onAbilityClicked={this.onAbilityClicked}
-                onItemClicked={this.onItemClicked} onDialogComplete={this.onDialogComplete} {...controlLables}/>
+                onItemClicked={this.onItemClicked} onDialogComplete={this.onDialogComplete} onContinue={this.backToGame} {...controlLables}/>
+                
+            {(this.state.controls === 'battle' || this.state.controls === 'item') &&
             <div id="options-section" style={{display: 'flex', justifyContent: 'space-between'}}>
                 <RPGUI.Button className="battle-btn" rpgColor="yellow" onClick={this.onEscapeClicked}>Escape</RPGUI.Button>
                 <RPGUI.Button className="battle-btn" rpgColor="yellow" onClick={this.onItemButtonClicked}>{this.state.controls === 'item' ? 'Cancel' : 'Items'}</RPGUI.Button>
-            </div>
+            </div>}
             <dialog id='battle-dialog'>
                 { this.state.result ? <ResultDialog player={this.player} result={this.state.result} oldLevel={this.state.oldLevel} newLevel={this.state.newLevel} onContinue={this.backToGame}/> : <></>}
             </dialog>
@@ -319,7 +356,7 @@ function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
         return (
             <div className='container'>
                 <h2>{result.endCondition === 'escape' ? 'Escaped!' : 'Defeat'}</h2>
-                {result.endCondition !== 'escape' ? <p>You will be restored to half of your maximum HP.</p> : <p>You have made it to safty.</p>}
+                {result.endCondition !== 'escape' ? <p>Your HP will be partially restored.</p> : <p>You have made it to safety.</p>}
                 <RPGUI.Button className="battle-btn" onClick={onContinue}>Continue</RPGUI.Button>
             </div>
         );
@@ -356,8 +393,8 @@ function ResultDialog({player, result, oldLevel, newLevel, onContinue}) {
     );
 }
 
-function BattleControls({controls, text, strikeText, abilities, items, onStrike, onAbilityClicked, onItemClicked, onDialogComplete}) {
-    let output = <div id="battle-controls" className='control-box'><p>Waiting</p></div>;
+function BattleControls({controls, text, strikeText, abilities, items, onStrike, onAbilityClicked, onItemClicked, onDialogComplete, onContinue}) {
+    let output = <div id="battle-controls" className='control-box' style={{color: 'white'}}><p>Waiting</p></div>;
 
     if(controls == 'battle') {
         const buttons = [<RPGUI.Button key='strike' className="battle-btn" rpgColor="blue" onClick={onStrike}>{strikeText}</RPGUI.Button>];
@@ -388,9 +425,14 @@ function BattleControls({controls, text, strikeText, abilities, items, onStrike,
         </div>
         );
     }
-
     else if(controls == 'error') {
-        output = <div id="battle-controls"><p>Sorry something went wrong</p></div>;
+        output = <div id="battle-controls" style={{color: 'white'}}><p>Sorry something went wrong</p></div>;
+    }
+    else if(controls === 'end') {
+        output = (
+            <div id="battle-controls" className='control-box'>
+                <RPGUI.Button rpgColor="yellow" onClick={onContinue}>Continue</RPGUI.Button>
+            </div>);
     }
 
     return output;
@@ -433,7 +475,7 @@ function BattleHeader(props) {
 
     return (
         <div className="battle_header" id={props.id}>
-            <h2>{props.title}</h2>
+            <h2 style={{textWrap: 'nowrap'}}>{props.title}</h2>
             <p>Level {props.level}</p>
             <RPGUI.ProgressBar id={`${props.id}-progress-bar`} progress={props.health} color={healthColor}/>
         </div>
@@ -467,7 +509,7 @@ function CounterBar(props) {
     
     return (
         <div className="counter_bar" id={props.id}>
-            <p>{props.title}:</p>{items}
+            <p style={{padding: "5px"}}>{props.title}:</p>{items}
         </div>
     );
 }

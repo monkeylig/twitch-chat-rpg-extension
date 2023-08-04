@@ -78,6 +78,7 @@ function Shop({shopData, player, onPlayerChanged}) {
     return (
         <>
             <h1>{shopData.title}</h1>
+            <h3>Coin Balance - {player.coins}</h3>
             <div className='item-container'>
                 {shopItems}
             </div>

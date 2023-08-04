@@ -173,11 +173,11 @@ function RPGSprite_onAnimationEnd(id, callback) {
         return;
     }
 
-    sprite.onanimationend = callback;    
+    sprite.onanimationend = callback;
 }
 
 function RPGSprite_setProperties(id, {autoplay = false, frameWidth = 50, frameHeight = 50, frameCount = 1,
-    duration = 1, iterationCount = 'infinite', spriteSheet = ''}) {
+    duration = 1, iterationCount = 'infinite', spriteSheet = '', imageRendering = 'auto'}) {
 
     const container = document.getElementById(id);
     const sprite = container.querySelector(`img`);
@@ -192,6 +192,7 @@ function RPGSprite_setProperties(id, {autoplay = false, frameWidth = 50, frameHe
     sprite.style['animation-iteration-count'] = iterationCount;
     sprite.style['animation-timing-function'] = `steps(${frameCount})`;
     sprite.style['animation-play-state'] = autoplay ? 'running' : 'paused';
+    sprite.style['image-rendering'] = imageRendering;
     sprite.setAttribute('src', spriteSheet)
 }
 
@@ -219,7 +220,8 @@ function RPGAbilityView({ability}) {
             <h3>{ability.name}</h3>
             <p>{ability.description}</p>
             <p>{ability.type} - {ability.style}</p>
-            <p>Damage: {utility.damageText(ability.baseDamage)}</p>
+            <p>Damage - {utility.damageText(ability.baseDamage)}</p>
+            <p>Speed - {ability.speed}</p>
 
         </>
     );
@@ -288,6 +290,12 @@ function RPGWeaponDialog({weapon, equipped=false, owned=false, price, canAfford=
         dialogControls.goToDialog(RPGConfirmDropDialog, {confirmMessage: `Are you sure you want to drop ${name}?`, onDroppedClicked});
     };
 
+    const onAbilityClicked = () => {
+        dialogControls.goToDialog(RPGUI.AbilityDialog, { 
+            ability: {...weapon.strikeAbility, speed: weapon.speed}
+        });
+    }
+
     const equipButton = equipped ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button onClick={onEquippedClicked} rpgColor='blue' className='bag-card-btn'>Equip</RPGUI.Button>;
     const buyButton = (
         <>
@@ -300,18 +308,19 @@ function RPGWeaponDialog({weapon, equipped=false, owned=false, price, canAfford=
     <div>
         <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
         <h2>{weapon.name}</h2>
+        {onBuyClicked && buyButton}
         <p>{weapon.description}</p>
         <p>{weapon.type} - {weapon.style}</p>
-        <p>Damage: {weapon.baseDamage}</p>
-        <p>Strike Ability: {weapon.strikeAbility.name}</p>
-        <h3>Leveling</h3>
+        <p>Damage - {weapon.baseDamage}</p>
+        <p>Speed - {weapon.speed}</p>
+        <p>Strike Ability: <RPGUI.Button onClick={onAbilityClicked}>{weapon.strikeAbility.name}</RPGUI.Button></p>
+        <h3>Improves character's stats by leveling</h3>
         <p>Health: +{weapon.statGrowth.maxHealth}</p>
         <p>Attack: +{weapon.statGrowth.attack}</p>
         <p>Magic: +{weapon.statGrowth.magic}</p>
         <p>Defence: +{weapon.statGrowth.defence}</p>
         {onEquippedClicked && equipButton}
         {onDroppedClicked && <RPGUI.Button onClick={()=>onDrop(weapon.name)} className='bag-card-btn'>Drop</RPGUI.Button>}
-        {onBuyClicked && buyButton}
     </div>
     );
 }

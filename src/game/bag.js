@@ -71,7 +71,7 @@ function BagMenu({player, onPlayerChanged}) {
 
     if(bagGroup === 'weapons') {
         currentBagList = player.bag.weapons;
-        currentDialog = WeaponDialog;
+        currentDialog = RPGUI.WeaponDialog;
         currentDialogParams = {
             equipped: selectedBagItem && selectedBagItem.id === player.weapon.id,
             weapon: selectedBagItem,
@@ -265,10 +265,8 @@ function BookDialog({book, dialogControls, equippedAbilities, playerTracker, onE
         }
         return (
             <div key={index}>
-                <h3>{abilityEntry.ability.name}</h3>
-                <p>Style: {abilityEntry.ability.style}</p>
+                <RPGUI.AbilityView ability={abilityEntry.ability}/>
                 <p>Requires: <span style={requirementStyle}>{requirementString}</span> kills to equip</p>
-                <p>Damage: {utility.damageText(abilityEntry.ability.baseDamage)}</p>
                 {equipButton}
             </div>
         );
@@ -297,35 +295,6 @@ function ItemDialog({item, dialogControls, onDroppedClicked}) {
             <p>{item.description}</p>
             <RPGUI.Button className='bag-card-btn' onClick={()=>onDrop(item.name)}>Drop</RPGUI.Button>
         </div>
-    );
-}
-
-function WeaponDialog({weapon, equipped, onEquippedClicked, onDroppedClicked, dialogControls}) {
-    if(!weapon) {
-        return;
-    }
-
-    const onDrop = (name) => {
-        dialogControls.goToDialog(ConfirmDialog, {confirmMessage: `Are you sure you want to drop ${name}?`, onDroppedClicked});
-    };
-
-    const equipButton = equipped ? <p style={{color: 'green'}}>Equipped!</p> : <RPGUI.Button onClick={onEquippedClicked} rpgColor='blue' className='bag-card-btn'>Equip</RPGUI.Button>;
-    return (
-    <div>
-        <button onClick={dialogControls.exit} style={{position: 'relative'}} className='circle-btn btn-red material-symbols-outlined'>arrow_back</button>
-        <h2>{weapon.name}</h2>
-        <p>{weapon.description}</p>
-        <p>{weapon.type} - {weapon.style}</p>
-        <p>Damage: {weapon.baseDamage}</p>
-        <p>Strike Ability: {weapon.strikeAbility.name}</p>
-        <h3>Leveling</h3>
-        <p>Health: +{weapon.statGrowth.maxHealth}</p>
-        <p>Attack: +{weapon.statGrowth.attack}</p>
-        <p>Magic: +{weapon.statGrowth.magic}</p>
-        <p>Defence: +{weapon.statGrowth.defence}</p>
-        {equipButton}
-        <RPGUI.Button onClick={()=>onDrop(weapon.name)} className='bag-card-btn'>Drop</RPGUI.Button>
-    </div>
     );
 }
 

@@ -72,7 +72,21 @@
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s;
+    overflow: hidden;
 }
+
+.carousel .page::-webkit-scrollbar {
+    background: rgba(0, 0, 0, 0);
+    height: 5px;
+    width: 5px;
+  }
+  
+  .carousel .page::-webkit-scrollbar-thumb {
+    background: var(--rpg-red);
+    border-radius: 10px;
+    height: 5px;
+    width: 5px;
+  }
 
 .carousel > input {
     display: none;
@@ -81,7 +95,9 @@
 .carousel input:checked + .page {
     opacity: 1;
     pointer-events: auto;
+    overflow-y: auto;
 }
+
 
 .content-flex {
     display: flex;

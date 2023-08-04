@@ -1,5 +1,5 @@
-const backendURL = "https://localhost:3000";
-const resourceBackendURL = 'https://localhost/resources/';
+const backendURL = process.env.NODE_ENV === 'development' ? "http://localhost:3000" : 'https://web-rpg-9000.uw.r.appspot.com/';
+const resourceBackendURL = process.env.NODE_ENV === 'development' ? 'https://localhost/resources/' : 'https://storage.googleapis.com/web_rpg_resources/';
 
 function endpoint_url(name, ...queryStrings) {
     let queryString = queryStrings.length ? "?" : '';

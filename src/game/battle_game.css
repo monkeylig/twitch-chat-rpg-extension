@@ -228,10 +228,6 @@
     height: 100%;
 }
 
-.rpg-list > li:hover {
-    transform: scale(1.05);
-}
-
 .drop-item .rpg-btn {
     justify-self: right;
     padding: 0;

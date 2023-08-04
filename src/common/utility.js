@@ -3,7 +3,7 @@ function getValue(value, defaultValue) {
 }
 
 function damageText(value) {
-    return !value ? '--' : value;
+    return !value ? '-' : value;
 }
 
 const utility = {
